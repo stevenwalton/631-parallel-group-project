@@ -53,7 +53,7 @@ many were trying to parallelize neural networks~\cite{10.1007/BFb0024235}.
 While the new resurgence of machine learning partially came from becoming
 accelerators like GPUs there are still many innovations for CPUs,
 such as Facebook's new speech-to-text (stt) system that works on
-CPUs~\cite{fbcpu} and is aimed at home assistants that can't use large and power
+CPUs~\cite{fbcpu} which is aimed at home assistants that can't use large and power
 hungry accelerators. Algorithms are getting larger and there is continued
 efforts to apply machine learning techniques to simpler hardware. Thus for the
 foreseeable future optimizing machine learning algorithms on various platforms
@@ -80,7 +80,7 @@ section of the network, this has become the most heavily optimized. Many have
 used optimized libraries like cuBLAS to accelerate training~\cite{5708849} while
 others have developed new optimization algorithms~\cite{DBLP:journals/corr/KingmaB14}. 
 
-\section{Proposed Experiments}
+\section{Proposed Work}
 %
 Within this work we propose to test and evaluate different levels of
 parallelization within a neural network. We will investigate the effects of
@@ -99,6 +99,37 @@ serial and parallel, and GPU implementations we can also gain a better
 understanding of how neural networks can be optimized for different
 architectures. For example, GPUs are great at performing matrix multiplications
 while CPUs are more generalized compute units. 
+
+Much of this work will focus on comparing naive implementations vs optimal
+solutions, such as the Coppersmith-Winnograd
+Algorithm~\cite{COPPERSMITH1990251}. Matrix (and tensor) multiplication is the
+backstone of many parts of these neural networks, and comparing naive
+implementations to optimized algorithms and optimized software packages gives
+insight into how the optimized packages work. By profiling the code we can also
+get a better insight into which areas need to be improved the most and we can
+quantify how much these types of algorithms affect neural networks. 
+
+The next most important aspect if to parallelize the gradient descent methods.
+There has been work in parallelizing Stochastic Gradient Descent
+(SGD)~\cite{10.5555/2997046.2997185}, as well as other algorithms like
+Adam~\cite{DBLP:journals/corr/KingmaB14}. One simple way to parallelize all of
+these algorithms is by performing batching, which we will explore in this work. 
+
+Furthermore, in this work we will do continued research, specifically into the
+optimizations and parallelized methods that PyTorch does. At this point we do
+not know much about these algorithms but expect that expertise and interest to
+grow as the project continues.
+
+\section{Deliverables}
+In this work we shall produce source code that performs different optimizations
+techniques in a serialized form, with OpenMP, with CUDA, with PyTorch's CPU
+implementation, as well as with Pytorch's GPU implementation. 
+%
+We shall also provide graphs that illustrate these differences for different
+network sizes. 
+%
+For this work we will also summarize our findings as well as further research
+and deliver this report by the end of the term.
 
 %
 \bibliographystyle{abbrv}
