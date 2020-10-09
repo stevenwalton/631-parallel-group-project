@@ -28,7 +28,7 @@
 
 \author{Luis Guzman\\
 University of Oregon\\
-{\tt\small lguzman@uoregon.edu}
+{\tt\small lguzmann@uoregon.edu}
 \and
 Steven Walton\\
 University of Oregon\\
@@ -41,64 +41,19 @@ University of Oregon\\
 %
 \maketitle 
 %
-\section{Background} 
+\section{Background and Motivation} 
 %
-Neural Networks are becoming increasingly popular within computing, with work
-affecting almost all sectors of computing. Because of this many researchers have
-devoted a lot of time optimizing these algorithms. Deep Neural Networks have
-progressed from being academic curiosities to being a cornerstone of many modern
-technologies. Because of this researchers are constantly trying to optimize for
-different accelerator technologies and platforms. Even long before accelerators
-many were trying to parallelize neural networks~\cite{10.1007/BFb0024235}.
-While the new resurgence of machine learning partially came from becoming
-accelerators like GPUs there are still many innovations for CPUs,
-such as Facebook's new speech-to-text (stt) system that works on
-CPUs~\cite{fbcpu} and is aimed at home assistants that can't use large and power
-hungry accelerators. Algorithms are getting larger and there is continued
-efforts to apply machine learning techniques to simpler hardware. Thus for the
-foreseeable future optimizing machine learning algorithms on various platforms
-will be an active area of research.  
+In the past decade, Neural Networks (NNs) have become increasingly popular, with advances in the area affecting almost every sector of computing. Deep Neural Networks (DNNs) \--- deeper, more complex models than their `shallow' counterparts \--- have progressed from being academic curiosities to being the cornerstone of many modern technologies. Given this newfound relevance, many researchers have devoted a lot of time optimizing these algorithms, constantly trying to improve them for different accelerator technologies and platforms. Even long before accelerators, many efforts in trying to parallelize neural networks were made~\cite{10.1007/BFb0024235}. While the new resurgence of machine learning (ML) partially came from the generalized availability of hardware accelerators like GPUs, there are still many innovations being made for CPUs. An example of this is Facebook's new Speech-to-Text (stt) system that runs on CPUs~\cite{fbcpu} and is aimed at home assistants that cannot rely on large and power-hungry accelerators. As ML algorithms are getting larger, there are also continued efforts to apply machine learning techniques to simpler hardware. Thus, for the foreseeable future, optimizing ML algorithms on various platforms will remain an active area of research.  
 
 \section{Speeding Up Neural Architectures}
 %
-There are many areas that neural architectures can be sped up. Many different
-calculations can be performed in parallel as they are not dependent on one
-another. This can be from the feed forward section to the backwards propagation.
-There are also parallel techniques for running the same model on different
-machines. There are techniques for data parallelism like batch 
-normalizing~\cite{DBLP:journals/corr/IoffeS15} that also improve performance,
-which is arguably a speedup too (speedup to a certain convergence value). 
+There are several areas in which neural architectures can be sped up. Many different calculations, found both in the forward and backward passes, can be performed in parallel as they are not dependent on one another. There are also parallel techniques for running the same model on different machines. Other techniques for data parallelism, such as batch normalizing~\cite{DBLP:journals/corr/IoffeS15}, also improve performance, which is arguably a type of speedup too, albeit convergence speed up. 
 
-The most computationally intensive part of the neural network is what is
-referred to backwards propagation. A neural network simply has a set of priors,
-data is fed in, an answer is given, and then you update the priors based on how
-wrong the answer is from the true solution. The way to update these priors is
-through backwards propagation. Fundamentally the main concept is performed by
-using a gradient descent technique, where we use the gradient to take a step in
-the direction towards a better solution. Being the most computationally heavy
-section of the network, this has become the most heavily optimized. Many have
-used optimized libraries like cuBLAS to accelerate training~\cite{5708849} while
-others have developed new optimization algorithms~\cite{DBLP:journals/corr/KingmaB14}. 
+The most computationally intensive part of training a neural network is the backward pass, which is performed using the backwards propagation algorithm. A neural network simply has a set of priors, data is fed in, an answer is given, and then the priors are updated based on how wrong the answer is from the true solution. The way to update these priors is through backwards propagation. Fundamentally, the main concept is performed by using a gradient descent technique, where the gradient is used to take a step in the direction towards a better solution. Being the most computationally heavy section of the training process, it has drawn the most optimization efforts. Many have used optimized libraries like cuBLAS to accelerate training~\cite{5708849} while others have developed new optimization algorithms~\cite{DBLP:journals/corr/KingmaB14}. 
 
 \section{Proposed Experiments}
 %
-Within this work we propose to test and evaluate different levels of
-parallelization within a neural network. We will investigate the effects of
-different acceleration techniques, including OpenMP and CUDA. For testing we
-will compare our network's performance and speed to that of
-PyTorch~\cite{paszke2017automatic}, an optimized python library for creating
-neural networks. We will test against both PyTorch's CPU and GPU
-implementations. To perform an accurate analysis we will compare how different
-parts of the network are parallelized or accelerated and thus determine which
-sections of the network are benefit the most from parallelization. We will also
-profile the code to determine where sections of code need the most speed up.
-While we do not expect to match the optimization that PyTorch has, we can
-compare naive implementations as well as optimized libraries against
-professional software that is commonly used in industry. By comparing both CPU,
-serial and parallel, and GPU implementations we can also gain a better
-understanding of how neural networks can be optimized for different
-architectures. For example, GPUs are great at performing matrix multiplications
-while CPUs are more generalized compute units. 
+Within this work we propose to test and evaluate different levels of parallelization within a neural network. We will profile the algorithm to determine which sections of the code lend themselves most for optimization. We will investigate the effects of different acceleration techniques, including OpenMP and CUDA. For testing, we will perform performance and speed comparisons between our implementation and models coded using PyTorch~\cite{paszke2017automatic}, an optimized python library for creating neural networks. We will test against both PyTorch's CPU and GPU implementations. To perform an accurate analysis we will compare how different parts of the network are parallelized or accelerated and thus determine which sections of the network are benefited the most from parallelization.  While we do not expect to match the optimization that PyTorch has, we can compare naive implementations as well as optimized libraries against professional software that is commonly used in industry. By comparing both CPU, serial and parallel, and GPU implementations we can also gain a better understanding of how neural networks can be optimized for different architectures. For example, GPUs are great at performing matrix multiplications while CPUs are more generalized compute units. 
 
 %
 \bibliographystyle{abbrv}
@@ -106,3 +61,4 @@ while CPUs are more generalized compute units.
 \bibliography{references} 
 %
 \end{document}
+
