@@ -38,22 +38,23 @@ int main(int argc, const char * argv[]) {
     srand(time(0));
 
     double learningRate;
-    int nIterations;
-    int interval;
+    int nEpochs;
+    double trainSplit;
+    int interval = 200;
     
     if (argc == 4){
         learningRate = stof(argv[1]);
-	nIterations = stoi(argv[2]);
-	interval = stoi(argv[3]);
+	nEpochs = stoi(argv[2]);
+	trainSplit = stof(argv[3]);
     }else{
-	cout << "Usage: \n\t./nn <lr> <n_iter> <interval>\n";
+	cout << "Usage: \n\t./nn <lr> <n_epochs> <train_split>\n";
 	cout << "Using default values: \n\n";
-	cout << "Learning rate = 0.03\n";
-	cout << "Iterations = 100\n";
-	cout << "Interval = 1\n\n";
-        learningRate = 0.03f;
-	nIterations = 100;
-        interval = 1;
+	cout << "Learning rate = 0.1\n";
+	cout << "Epochs = 1000\n";
+	cout << "Train split = 0.8\n";
+        learningRate = 0.1f;
+	nEpochs = 1000;
+	trainSplit = 0.8;
     }
   
 
@@ -64,7 +65,7 @@ int main(int argc, const char * argv[]) {
     int dataset_size = 1000;
     double trainingInputs[dataset_size][2];
     double labels[dataset_size][1];
-    int trainSize = 800;
+    int trainSize = int(trainSplit * dataset_size);
     
     for (int i = 0; i < dataset_size; i++) {
         for (int j=0; j<1; j++) {
@@ -162,9 +163,14 @@ int main(int argc, const char * argv[]) {
     // ****************************************** Training ***********************************************************
     int r = 0;
     int index;
-    for (int n=0; n < nIterations; n++){
+    double epochLoss;
+    int epochHits;
+    for (int n=0; n < nEpochs; n++){
         
-        for (r = 0; r < trainSize; r++){
+	epochLoss = 0.0;
+	epochHits = 0;
+        
+	for (r = 0; r < trainSize; r++){
 	
             index = arr[r];
 	    //Picking a random example from dataset
@@ -205,13 +211,16 @@ int main(int argc, const char * argv[]) {
             }
             
            // *************************************************************** Printing results ********************************************************************
-
+           /*
 	    if(r % interval == 0){ 
                 //cout << "Iteration "<< n <<" Input:" << trainingInputs[index][0] << " " << trainingInputs[index][1] << "    Output:" << outputLayer[0] << "    Expected Output: " << labels[index] << "\n";
                 //cout << "x = " << trainingInputs[index][0] << "y = " << trainingInputs[index][1] << "\n";
 		//cout << "Iteration " << n << " : " << r << " Output:" << ((outputLayer[0] > outputLayer[1]) ? 0 : 1) << " Expected Output: " << ((labels[index][0] > labels[index][1]) ? 0 : 1) << "\n";//" Loss: " <<  crossEntropyLoss(labels[index], outputLayer[0]) <<"\n"; 
-	        cout << "Iteration " << n << " : " << r << " Output:" << (outputLayer[0]) << " Expected Output: " << (labels[index][0]) << " Loss: " <<  crossEntropyLoss(labels[index][0], outputLayer[0]) <<"\n";
+	        //cout << "Iteration " << n << " : " << r << " Output:" << (outputLayer[0]) << " Expected Output: " << (labels[index][0]) << " Loss: " <<  crossEntropyLoss(labels[index][0], outputLayer[0]) <<"\n";
 	    }
+	    */
+	    epochLoss += crossEntropyLoss(labels[index][0], outputLayer[0]);
+	    if (round(outputLayer[0]) == labels[index][0]) epochHits += 1;
 	    
            // *************************************************************** Backpropagation **********************************************************************
             
@@ -271,7 +280,8 @@ int main(int argc, const char * argv[]) {
                     inputHiddenWeights[k][j] += trainingInputs[index][k] * deltaHidden[0][j] * learningRate;
                 }
             }
-        }    
+        }
+        cout << "Epoch " << n << " Train Accuracy: " << (double)epochHits/(double)trainSize << " Loss: " << epochLoss/trainSize << endl;	
     }
  
     return 0;
