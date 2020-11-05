@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -48,22 +49,29 @@ int main(int argc, const char * argv[]) {
 	cout << "Usage: \n\t./nn <lr> <n_iter> <interval>\n";
 	cout << "Using default values: \n\n";
 	cout << "Learning rate = 0.03\n";
-	cout << "Iterations = 1000\n";
+	cout << "Iterations = 100\n";
 	cout << "Interval = 1\n\n";
         learningRate = 0.03f;
-	nIterations = 1000;
+	nIterations = 100;
         interval = 1;
     }
-    //for (int i = 0; i < argc; ++i) 
-    //    cout << argv[i] << "\n"; 
   
 
     //Reading the dataset
     string line;
     string element;
     ifstream myfile ("circles_dataset.txt");
-    double trainingInputs[1000][4];
-    double labels[1000];
+    int dataset_size = 1000;
+    double trainingInputs[dataset_size][2];
+    double labels[dataset_size][1];
+    int trainSize = 800;
+    
+    for (int i = 0; i < dataset_size; i++) {
+        for (int j=0; j<1; j++) {
+            labels[i][j] = 0.0;
+        }
+    }
+
     int i = 0;
     if (myfile.is_open()){
         while ( getline (myfile, line) ){
@@ -75,20 +83,31 @@ int main(int argc, const char * argv[]) {
             trainingInputs[i][1] = stod(element);
             
             //a little bit of feature engineering to help out :p	    
-	    trainingInputs[i][2] = pow(trainingInputs[i][0],2);
-	    trainingInputs[i][3] = pow(trainingInputs[i][0],2);
+	    //trainingInputs[i][2] = pow(trainingInputs[i][0],2);
+	    //trainingInputs[i][3] = pow(trainingInputs[i][0],2);
 
 	    getline(ss, element, ',');
-            labels[i] = stod(element);
+            //labels[i][stoi(element)] = 1.0;
+	    labels[i][0] = stod(element);
             i++;
         }
         myfile.close();
     }
-
     else cout << "Unable to open file";
 
+    vector<int> arr;
+
+    // creating a an array to shuffle for training
+    for (int j = 0; j < dataset_size; ++j)
+        // 1 2 3 4 5 6 7 8 9
+        arr.push_back(j);
+
+    // using built-in random generator
+    random_shuffle(arr.begin(), arr.end());
+
+
     //Network structure
-    static const int numInputs = 4;
+    static const int numInputs = 2;
     static const int numHiddenLayers = 2;
     static const int numHiddenNodes = 2;
     static const int numOutputs = 1;
@@ -142,17 +161,21 @@ int main(int argc, const char * argv[]) {
 
     // ****************************************** Training ***********************************************************
     int r = 0;
-    for (int n=0; n < nIterations; n++) {
-            
+    int index;
+    for (int n=0; n < nIterations; n++){
+        
+        for (r = 0; r < trainSize; r++){
+	
+            index = arr[r];
 	    //Picking a random example from dataset
-	    r = (rand() % 1000); 
+	    //r = (rand() % 1000); 
             // ******************************************** Forward pass ********************************************************
             
 	    //Computing first hidden layer activations from inputs
-            for (int j=0; j<numHiddenNodes; j++) {
+            for (int j = 0; j < numHiddenNodes; j++) {
                 double activation = hiddenLayerBias[0][j];
-                 for (int k=0; k<numInputs; k++) {
-                    activation+=trainingInputs[r][k]*inputHiddenWeights[k][j];
+                 for (int k = 0; k < numInputs; k++) {
+                    activation += trainingInputs[index][k] * inputHiddenWeights[k][j];
                 }
                 hiddenLayer[0][j] = sigmoid(activation);
             }
@@ -160,11 +183,11 @@ int main(int argc, const char * argv[]) {
 	    //Computing intermediate hidden layers
 	    //For now, we assume all hidden layers have the same # neurons
 	    for (int l = 1; l < numHiddenLayers; l++){
-	        for (int j=0; j < numHiddenNodes; j++){
+	        for (int j = 0; j < numHiddenNodes; j++){
 	            double activation = hiddenLayerBias[l][j];
-		    for (int k=0; k < numHiddenNodes; k++) {
+		    for (int k = 0; k < numHiddenNodes; k++) {
 			// previous layer activation times the corresponding weight
-		        activation+=hiddenLayer[l-1][k] * hiddenWeights[l-1][k][j]; //l-1 here cause first hidden layer weights are separate
+		        activation += hiddenLayer[l-1][k] * hiddenWeights[l-1][k][j]; //l-1 here cause first hidden layer weights are separate
 		    }
 
 		    hiddenLayer[l][j] = sigmoid(activation);
@@ -172,10 +195,10 @@ int main(int argc, const char * argv[]) {
 	    }
 
 	    //Computing output layer from last hidden layer
-            for (int j=0; j<numOutputs; j++) {
-                double activation=outputLayerBias[j];
-                for (int k=0; k<numHiddenNodes; k++) {
-                    activation+=hiddenLayer[numHiddenLayers-1][k]*outputWeights[k][j];
+            for (int j=0; j < numOutputs; j++) {
+                double activation = outputLayerBias[j];
+                for (int k = 0; k < numHiddenNodes; k++) {
+                    activation += hiddenLayer[numHiddenLayers-1][k] * outputWeights[k][j];
                 }
                 outputLayer[j] = sigmoid(activation);
                 //outputLayer[j] = activation; //doing regression
@@ -183,26 +206,29 @@ int main(int argc, const char * argv[]) {
             
            // *************************************************************** Printing results ********************************************************************
 
-	    if(n % interval == 0){ 
-                //cout << "Iteration "<< n <<" Input:" << trainingInputs[r][0] << " " << trainingInputs[r][1] << "    Output:" << outputLayer[0] << "    Expected Output: " << labels[r] << "\n";
-                //cout << "x = " << trainingInputs[r][0] << "y = " << trainingInputs[r][1] << "\n";
-		cout << "Iteration " << n << " Output:" << outputLayer[0] << " Expected Output: " << labels[r] << " Loss: " <<  crossEntropyLoss(labels[r], outputLayer[0]) <<"\n"; 
+	    if(r % interval == 0){ 
+                //cout << "Iteration "<< n <<" Input:" << trainingInputs[index][0] << " " << trainingInputs[index][1] << "    Output:" << outputLayer[0] << "    Expected Output: " << labels[index] << "\n";
+                //cout << "x = " << trainingInputs[index][0] << "y = " << trainingInputs[index][1] << "\n";
+		//cout << "Iteration " << n << " : " << r << " Output:" << ((outputLayer[0] > outputLayer[1]) ? 0 : 1) << " Expected Output: " << ((labels[index][0] > labels[index][1]) ? 0 : 1) << "\n";//" Loss: " <<  crossEntropyLoss(labels[index], outputLayer[0]) <<"\n"; 
+	        cout << "Iteration " << n << " : " << r << " Output:" << (outputLayer[0]) << " Expected Output: " << (labels[index][0]) << " Loss: " <<  crossEntropyLoss(labels[index][0], outputLayer[0]) <<"\n";
 	    }
 	    
            // *************************************************************** Backpropagation **********************************************************************
             
 	    //Finding the updates for the output layer
             double deltaOutput[numOutputs];
+	    double errorOutput;
             for (int j=0; j<numOutputs; j++) {
-                double errorOutput = labels[r] - outputLayer[j];
+                errorOutput = labels[index][j] - outputLayer[j];
                 deltaOutput[j] = errorOutput * dSigmoid(outputLayer[j]);
          	//cout << "delta output = " << deltaOutput[j] << "\n";
             }
             
 	    //Finding the updates for the last hidden layer
             double deltaHidden[numHiddenLayers][numHiddenNodes];
+	    double errorHidden;
 	    for (int j=0; j < numHiddenNodes; j++) {
-                double errorHidden = 0.0f;
+                errorHidden = 0.0f;
                 for(int k=0; k < numOutputs; k++) {
                     errorHidden += deltaOutput[k] * outputWeights[j][k];
                 }
@@ -242,10 +268,10 @@ int main(int argc, const char * argv[]) {
             for (int j=0; j < numHiddenNodes; j++) {
                 hiddenLayerBias[0][j] += deltaHidden[0][j] * learningRate;
                 for(int k=0; k < numInputs; k++) {
-                    inputHiddenWeights[k][j] += trainingInputs[r][k] * deltaHidden[0][j] * learningRate;
+                    inputHiddenWeights[k][j] += trainingInputs[index][k] * deltaHidden[0][j] * learningRate;
                 }
             }
-   
+        }    
     }
  
     return 0;
