@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include <bits/stdc++.h>
+//#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -31,6 +31,113 @@ double unitRandom(){
 
 double crossEntropyLoss(double y, double y_hat){
     return -(y * log(y_hat) + (1-y) * log(1 - y_hat));
+}
+
+template<size_t N, size_t M>
+void readFile(string filename,
+              int dataset_size,
+              double trainingInputs[][N],
+              double labels[][M]
+        )
+{
+    //Reading the dataset
+    string line;
+    string element;
+    ifstream myfile (filename);
+    
+    for (int i = 0; i < dataset_size; i++) {
+        for (int j=0; j<1; j++) {
+            labels[i][j] = 0.0;
+        }
+    }
+
+    int i = 0;
+    if (myfile.is_open()){
+        while ( getline (myfile, line) ){
+            stringstream ss(line);
+            getline(ss, element, ',');
+            trainingInputs[i][0] = stod(element);
+            
+	    getline(ss, element, ',');
+            trainingInputs[i][1] = stod(element);
+            
+	    getline(ss, element, ',');
+	    labels[i][0] = stod(element);
+            i++;
+        }
+        myfile.close();
+    }
+    else 
+        cout << "Unable to open file";
+    cout << "File read" << endl;
+}
+
+template <size_t N, size_t M>
+void initInput(double inputHiddenWeights[][M])
+{
+    for (int i=0; i<N; ++i) {
+        for (int j=0; j<M; ++j) {
+            inputHiddenWeights[i][j] = unitRandom();
+        }
+    }
+}
+
+template <size_t N, size_t M>
+void initHiddenWeights(double hiddenWeights[][M][M])
+{
+    for (int i = 0; i < N-1; ++i){
+        for (int j=0; j < M; ++j) {
+            for (int k=0; k < M; ++k) {
+                hiddenWeights[i][j][k] = unitRandom();
+            }
+        }
+    }
+}
+
+template <size_t N, size_t M>
+void initHiddenLayerBias(double hiddenLayerBias[][M])
+{
+    for (int i = 0; i < N; ++i) 
+        for (int j = 0; j < M; ++j) {
+            hiddenLayerBias[i][j] = unitRandom();
+        }
+}
+
+template <size_t N, size_t M>
+void initOutputWeights(double outputWeights[][M])
+{
+    for (int i=0; i < N; ++i) {
+        for (int j=0; j < M; ++j) {
+            outputWeights[i][j] = unitRandom();
+        }
+    }
+}
+
+template <size_t N>
+void initOutputLayerBias(double outputLayerBias[])
+{
+    for (int i = 0; i< N; ++i) {
+        outputLayerBias[i] = unitRandom();
+    }
+}
+
+template <size_t N, size_t M>
+void init_network(double inputHiddenWeights[][N],
+                  double hiddenWeights[][N][N],
+                  double hiddenLayerBias[][N],
+                  double outputWeights[][M],
+                  double outputLayerBias[])
+{
+    //Initializing input hidden weights 
+    initInput<N, N>(inputHiddenWeights);
+    //Initializing hidden weights
+    initHiddenWeights<N, N>(hiddenWeights);
+    //Initializing hidden bias
+    initHiddenLayerBias<N, N>(hiddenLayerBias);
+    //Initializing output weights
+    initOutputWeights<N, M>(outputWeights);
+    //Initializing output bias
+    initOutputLayerBias<M>(outputLayerBias);
 }
 
 int main(int argc, const char * argv[]) {
@@ -58,43 +165,13 @@ int main(int argc, const char * argv[]) {
     }
   
 
-    //Reading the dataset
-    string line;
-    string element;
-    ifstream myfile ("circles_dataset.txt");
     int dataset_size = 1000;
+    int trainSize = int(trainSplit * dataset_size);
+    string filename = "circles_dataset.txt";
     double trainingInputs[dataset_size][2];
     double labels[dataset_size][1];
-    int trainSize = int(trainSplit * dataset_size);
-    
-    for (int i = 0; i < dataset_size; i++) {
-        for (int j=0; j<1; j++) {
-            labels[i][j] = 0.0;
-        }
-    }
-
-    int i = 0;
-    if (myfile.is_open()){
-        while ( getline (myfile, line) ){
-            stringstream ss(line);
-            getline(ss, element, ',');
-            trainingInputs[i][0] = stod(element);
-            
-	    getline(ss, element, ',');
-            trainingInputs[i][1] = stod(element);
-            
-            //a little bit of feature engineering to help out :p	    
-	    //trainingInputs[i][2] = pow(trainingInputs[i][0],2);
-	    //trainingInputs[i][3] = pow(trainingInputs[i][0],2);
-
-	    getline(ss, element, ',');
-            //labels[i][stoi(element)] = 1.0;
-	    labels[i][0] = stod(element);
-            i++;
-        }
-        myfile.close();
-    }
-    else cout << "Unable to open file";
+    // Pass in size from trainingInputs and labels
+    readFile<2,1>(filename, dataset_size, trainingInputs, labels);
 
     vector<int> arr;
 
@@ -124,41 +201,11 @@ int main(int argc, const char * argv[]) {
     double outputWeights[numHiddenNodes][numOutputs];
     
     // ********************************** Initializing the weights ********************************************** 
-    //Initializing input hidden weights 
-    for (int i=0; i<numInputs; i++) {
-        for (int j=0; j<numHiddenNodes; j++) {
-            inputHiddenWeights[i][j] = unitRandom();
-        }
-    }
-
-    //Initializing hidden weights
-    for (int l = 0; l < numHiddenLayers-1; l++){
-        for (int i=0; i<numHiddenNodes; i++) {
-            for (int j=0; j<numHiddenNodes; j++) {
-                hiddenWeights[l][i][j] = unitRandom();
-            }
-        }
-    }
-
-    //Initializing hidden bias
-    for (int l = 0; l < numHiddenLayers; l++){
-        for (int z=0; z<numHiddenNodes; z++) {
-            hiddenLayerBias[l][z] = unitRandom();
-        }
-    }
-
-    //Initializing output weights
-    for (int i=0; i<numHiddenNodes; i++) {
-        for (int j=0; j<numOutputs; j++) {
-            outputWeights[i][j] = unitRandom();
-        }
-    }
-
-    //Initializing output bias
-    for (int i=0; i<numOutputs; i++) {
-        outputLayerBias[i] = unitRandom();
-    }
-    
+    init_network<numInputs,numOutputs>(inputHiddenWeights, 
+                                       hiddenWeights, 
+                                       hiddenLayerBias, 
+                                       outputWeights,
+                                       outputLayerBias);
 
     // ****************************************** Training ***********************************************************
     int r = 0;
