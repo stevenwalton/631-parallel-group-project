@@ -6,8 +6,7 @@ struct node
     float activation;
     float weight;
     float bias;
+    float error;
 };
-
-
 
 #endif

@@ -16,12 +16,14 @@ void LinearLayer::InitializeLayer()
         i.activation = 0;
         i.weight = 0;
         i.bias= 0;
+        i.error = 0;
     }
     for (node& i : output_nodes)
     {
         i.activation = 0;
         i.weight = 0;
-        i.bias= 0;
+        i.bias = 0;
+        i.error = 0;
     }
 }
 
@@ -36,11 +38,16 @@ void LinearLayer::Forward()
     }
 }
 
-void LinearLayer::Backward()
+void LinearLayer::Backward(std::vector<node> x,
+                           std::vector<node> y)
 {
+    math.MSE(x,y);
+    for (node i : x)
+    {
+        for (node j : y)
+        {
+            j.activation -= learning_rate*math.derivative_sigmoid(j.activation);
+        }
+    }
 }
 
-void LinearLayer::Connect(std::vector<struct node> input)
-{
-    std::copy(input_nodes.begin(), input_nodes.end(), back_inserter(input));
-}
