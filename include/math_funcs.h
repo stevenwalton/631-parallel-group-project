@@ -19,9 +19,12 @@ class math_funcs
         float derivative_sigmoid(float x){return x * (1. - x);}
         void MSE(std::vector<struct node>& x, std::vector<struct node> y)
             {for (node i : x) {
+                    i.error = 0;
                     for (node j : y) {
-                        i.error += pow((j.activation - j.activation),2.);
-                    } } };
+                        i.error += pow(i.activation,2) - pow(j.activation,2); 
+                    }
+                    sqrt(i.error);
+            } };
 };
 
 
