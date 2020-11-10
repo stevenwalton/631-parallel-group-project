@@ -25,6 +25,9 @@ class math_funcs
                     }
                     sqrt(i.error);
             } };
+	float unit_random(){
+    		return ((float)rand())/((float)RAND_MAX);
+	};
 };
 
 
