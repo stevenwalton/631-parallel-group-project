@@ -10,7 +10,6 @@ LinearLayer::LinearLayer(int num_inputs, int num_outputs)
     this->num_neurons = num_outputs;
     neurons.resize(this->num_neurons);
     //output_nodes.resize(this->num_outputs);
-    //this->num_weights = num_inputs;
     initializeLayer();
 }
 
@@ -27,13 +26,6 @@ void LinearLayer::initializeLayer()
             i.weight.emplace_back(math.unit_random());
     }
 }
-
-/*void LinearLayer::SetOutputWeights(std::vector<struct node> connection)
-{
-    int num_nodes = connection.size();
-    for (node& i : output_nodes)
-        i.weight.emplace_back(1);
-}*/
 
 void LinearLayer::zeroGrad()
 {
@@ -85,15 +77,17 @@ void LinearLayer::forward(std::vector<float> input)
     }
 }
 
-//I'm using independent deltas and weights vectors here instead of passing an actual
-//node vector because the output layer is computed differently
-//this way we can just pass the derivative of the loss function as the delta and a
-//corresponding array of weights just set to 1
+/*First step of backprop
+ * I'm using independent deltas and weights vectors here instead of passing an actual
+node vector because the output layer is computed differently.
+This way, for the output layer, we can just pass the derivative of the loss function 
+as the delta and a corresponding array of weights set to 1.
+For all other layers we pass the deltas and weights of the next layer.
+*/
 void LinearLayer::computeDeltas(std::vector<float> deltas, std::vector<std::vector<float>> weights) 
 {
 	//Zero_Grad(); // Kills gradient accumulation, which we aren't doing
 	
-	//on an inner node, that is, not the output node
 	size_t jj;
 	size_t ii = 0;
 	for (node& i : this->neurons)
@@ -153,8 +147,6 @@ std::vector<std::vector<float>> LinearLayer::getWeights()
         }
         return weights;
 }
-
-//vector<vector<data_type>> vec;
 
 void LinearLayer::printActivations()
 {
