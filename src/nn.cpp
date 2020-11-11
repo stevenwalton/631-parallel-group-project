@@ -174,3 +174,13 @@ void LinearLayer::printWeights()
 	for (node& i : this->neurons)
 		this->printNodeWeights(i);
 }
+
+int LinearLayer::getNumInputs()
+{
+	return this->num_inputs;
+}
+
+int LinearLayer::getNumNeurons()
+{
+	return this->num_neurons;
+}

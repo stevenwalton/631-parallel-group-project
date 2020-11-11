@@ -50,6 +50,8 @@ class LinearLayer
 	void printWeights();
 	void printBias();
         void printNodeWeights(struct node);
+	int getNumInputs();
+	int getNumNeurons();
 	std::vector<float> getActivations();
 	std::vector<float> getDeltas();
 	std::vector<std::vector<float>> getWeights();
