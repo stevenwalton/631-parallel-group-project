@@ -15,13 +15,13 @@ class LinearLayer
         int num_neurons;
 	//not sure learning rate should be a layer attribute
 	//however, I'm setting it to 3 as default just to check that its working
-        int learning_rate = 3; 
+        float learning_rate; 
 
         std::vector<struct node> neurons;
         //std::vector<struct node> output_nodes;
 
     public:
-        LinearLayer(int, int);
+        LinearLayer(int, int, float=0.3);
         void initializeLayer();
         // Main Components
         void forward(std::vector<float>);
@@ -52,9 +52,12 @@ class LinearLayer
         void printNodeWeights(struct node);
 	int getNumInputs();
 	int getNumNeurons();
+	float getLearningRate();
+	void setLearningRate(float);
 	std::vector<float> getActivations();
 	std::vector<float> getDeltas();
 	std::vector<std::vector<float>> getWeights();
+	
 };
 
 #endif

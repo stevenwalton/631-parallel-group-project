@@ -4,10 +4,11 @@
 #include "math_funcs.h"
 #include <cassert>
 
-LinearLayer::LinearLayer(int num_inputs, int num_outputs)
+LinearLayer::LinearLayer(int num_inputs, int num_outputs, float lr)
 {
     this->num_inputs = num_inputs;
     this->num_neurons = num_outputs;
+    this->learning_rate = lr;
     neurons.resize(this->num_neurons);
     //output_nodes.resize(this->num_outputs);
     initializeLayer();
@@ -62,6 +63,7 @@ void LinearLayer::forward(std::vector<float> input)
      */
     //std::cout << input.size() << std::endl;
     //std::cout << this->num_inputs << std::endl; 
+    
     assert(input.size() == this->num_inputs);
     size_t ii = 0;
     for (node& i : this->neurons)
@@ -183,4 +185,14 @@ int LinearLayer::getNumInputs()
 int LinearLayer::getNumNeurons()
 {
 	return this->num_neurons;
+}
+
+float LinearLayer::getLearningRate()
+{
+	return this->learning_rate;
+}
+
+void LinearLayer::setLearningRate(float lr)
+{
+	this->learning_rate = lr;
 }

@@ -58,7 +58,7 @@ void Sequential::trainIteration(std::vector<float> training_inputs, std::vector<
 {
 	std::vector<float> preds = this->forward(training_inputs);
 	
-	std::cout << "Prediciton = " << preds[0] << "\n";
+	//std::cout << "Prediction = " << preds[0] << "\n";
 
 	this->backward(lossFunctionDerivative(preds, labels), training_inputs);
 }
