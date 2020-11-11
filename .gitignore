@@ -3,3 +3,9 @@
 *.bbl
 *.blg
 *.log
+
+Makefile
+CMakeCache.txt
+CmakeFiles
+cmake_install.cmake
+main

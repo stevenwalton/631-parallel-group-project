@@ -9,6 +9,21 @@
 
 using namespace std;
 
+void defineModel(Sequential &model, float learning_rate)
+{
+    //creating the layers
+    LinearLayer inputLayer(2,3, learning_rate);
+    LinearLayer h1(3,3, learning_rate);
+    LinearLayer h2(3,3, learning_rate);
+    LinearLayer outputLayer(3,1, learning_rate);
+
+    //Adding the layers to the model
+    model.add(inputLayer);
+    model.add(h1);
+    model.add(h2);
+    model.add(outputLayer);
+}
+
 int main(int argc, const char * argv[])
 {
     //setting a random seed
@@ -39,21 +54,9 @@ int main(int argc, const char * argv[])
 
     readDataset(dataset, features, labels);
 
-    //creating the layers
-    LinearLayer inputLayer(2,3, learning_rate);
-    LinearLayer h1(3,3, learning_rate);
-    LinearLayer h2(3,3, learning_rate);
-    //LinearLayer h3(3,3, learning_rate);
-    LinearLayer outputLayer(3,1, learning_rate);
-
+    /************* Define Model *********************/
     Sequential model;
-    //Adding the layers to the model
-    model.add(inputLayer);
-    model.add(h1);
-    model.add(h2);
-    //model.add(h3);
-    model.add(outputLayer);
-
+    defineModel(model, learning_rate);
     cout << endl;
     model.printModel();
 
@@ -65,36 +68,28 @@ int main(int argc, const char * argv[])
 
     cout << "Starting training, using learning rate = " << model.getLayers()[0].getLearningRate() << "\n";
     
+    float accuracy; 
     for (int n = 0; n < n_epochs; n++)
     {
     	epochLoss = 0.0;
 	epochHits = 0;
-	for (int i = 0; i < features.size(); i++)
+	for (size_t i = 0; i < features.size(); i++)
 	{       
-		//cout << "Iteration " << i << "\n";
 		model.trainIteration(features[i], labels[i]);
 		predictions = model.forward(features[i]);
 		
 		//looking for hits
-		//this needsd to be adapted for multiple outputs
+		//this needed to be adapted for multiple outputs
 		if(round(predictions[0]) == labels[i][0])
 			epochHits += 1;
 	}
-	cout << "Epoch " << n << " Accuracy: " << (float)epochHits/(float)features.size() << "\n";
+        accuracy = (float)epochHits/(float)features.size();
+	cout << "Epoch " << n << " Accuracy: " << accuracy << "\n";
+        if (accuracy == 1)
+        {
+            cout << "Reached accuracy of 1. Stopping early" << endl;
+            break;
+        }
     }
-    /*
-    model.trainIteration(example_input, example_labels);
-
-    //std::cout << "\nOutput: "; 
-    //outputLayer.printActivations();  
-
-    std::cout << "\nUpdated input layer deltas:\n\n";
-    for (float d : model.getLayers()[0].getDeltas())
-            std::cout << d << " ";
-    std::cout << "\n";
-
-    std::cout << "\nUpdated input layer weights:\n\n";
-    model.getLayers()[0].printWeights();
-    */
     return 0;
 }

@@ -57,9 +57,13 @@ void LinearLayer::forward(std::vector<float> input)
      *
      *
      * Maybe this should not be void and return the 
-     * computed activations instead. Somehting like:
+     * computed activations instead. Something like:
      *
      * return this.getActivations();
+     *
+     *
+     * I think this is good because we can store everything in the class itself.
+     * - Steven
      */
     //std::cout << input.size() << std::endl;
     //std::cout << this->num_inputs << std::endl; 
@@ -150,49 +154,29 @@ std::vector<std::vector<float>> LinearLayer::getWeights()
         return weights;
 }
 
-void LinearLayer::printActivations()
+inline void LinearLayer::printActivations()
 {
     for (node& i : this->neurons)
         std::cout << i.activation << " ";
     std::cout << std::endl;
 }
 
-void LinearLayer::printBias()
+inline void LinearLayer::printBias()
 {
     for (node& i : this->neurons)
 	    std::cout << i.bias << " ";
     std::cout << std::endl;
 }
 
-void LinearLayer::printNodeWeights(struct node n)
+inline void LinearLayer::printNodeWeights(struct node n)
 {
     for (size_t i = 0; i < n.weight.size(); ++i)
         std::cout << n.weight[i] << " ";
     std:: cout << std::endl;
 }
 
-void LinearLayer::printWeights()
+inline void LinearLayer::printWeights()
 {
 	for (node& i : this->neurons)
 		this->printNodeWeights(i);
-}
-
-int LinearLayer::getNumInputs()
-{
-	return this->num_inputs;
-}
-
-int LinearLayer::getNumNeurons()
-{
-	return this->num_neurons;
-}
-
-float LinearLayer::getLearningRate()
-{
-	return this->learning_rate;
-}
-
-void LinearLayer::setLearningRate(float lr)
-{
-	this->learning_rate = lr;
 }

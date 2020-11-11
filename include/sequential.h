@@ -12,18 +12,13 @@ class Sequential
 
 	public:
 		Sequential();
-
-		void add(LinearLayer);
-
 		std::vector<float> forward(std::vector<float>);
-
 		void backward(std::vector<float>, std::vector<float>);
+		inline void add(LinearLayer l){layers.emplace_back(l);};
 
 		void trainIteration(std::vector<float>, std::vector<float>);
-
 		std::vector<float> lossFunctionDerivative(std::vector<float>, std::vector<float>);
-
-		std::vector<LinearLayer> getLayers();
-
+                // Helpers
 		void printModel();
+		inline std::vector<LinearLayer> getLayers(){return this->layers;};
 };

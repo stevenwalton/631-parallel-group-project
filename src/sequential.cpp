@@ -8,15 +8,10 @@
 Sequential::Sequential(){
 }
 
-void Sequential::add(LinearLayer l)
-{
-	layers.emplace_back(l);
-}
-
 std::vector<float> Sequential::forward(std::vector<float> inputs)
 {
 	std::vector<float> current_input(inputs.begin(), inputs.end());
-	for (size_t i = 0; i < layers.size(); i++)
+	for (size_t i = 0; i < layers.size(); ++i)
 	{
 		layers[i].forward(current_input);
 		current_input = layers[i].getActivations();
@@ -30,7 +25,8 @@ void Sequential::backward(std::vector<float> error, std::vector<float> inputs)
 	//Creating the fake 'weights' vector of vectors for the 
 	//output layer
 	std::vector<std::vector<float>> current_weights;
-	for(float f : error)
+	//for(float f : error)
+        for (size_t i = error.size(); i != 0; --i) 
 	{
 		std::vector<float> w{1.0};
 		current_weights.emplace_back(w);
@@ -58,27 +54,21 @@ void Sequential::trainIteration(std::vector<float> training_inputs, std::vector<
 {
 	std::vector<float> preds = this->forward(training_inputs);
 	
-	//std::cout << "Prediction = " << preds[0] << "\n";
-
 	this->backward(lossFunctionDerivative(preds, labels), training_inputs);
 }
 
 std::vector<float> Sequential::lossFunctionDerivative(std::vector<float> predictions, std::vector<float> labels)
 {
 	std::vector<float> error;
-	for (int i = 0; i < labels.size(); i++)
+	for (size_t i = 0; i < labels.size(); ++i)
 		error.emplace_back(labels[i] - predictions[i]);
 	return error;
 }
 
 /***************** Helper functions **********************************/
-std::vector<LinearLayer> Sequential::getLayers(){
-	return this->layers;
-}
-
 void Sequential::printModel(){
 	std::cout << "Model has " << this->layers.size() << " layers: \n";
-	for (size_t i = 0; i < layers.size(); i++)
+	for (size_t i = 0; i < layers.size(); ++i)
 	{
 	std::cout << "Layer "<< i << ": (" << layers[i].getNumInputs() << ", " << layers[i].getNumNeurons() << ")\n";
 	}
