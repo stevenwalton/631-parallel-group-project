@@ -165,6 +165,10 @@ int main(int argc, const char * argv[]) {
     }
   
 
+    //Reading the dataset
+    string line;
+    string element;
+    ifstream myfile ("circles_dataset.txt");
     int dataset_size = 1000;
     int trainSize = int(trainSplit * dataset_size);
     string filename = "circles_dataset.txt";
@@ -186,8 +190,8 @@ int main(int argc, const char * argv[]) {
 
     //Network structure
     static const int numInputs = 2;
-    static const int numHiddenLayers = 2;
-    static const int numHiddenNodes = 2;
+    static const int numHiddenLayers = 3;
+    static const int numHiddenNodes = 3;
     static const int numOutputs = 1;
     
     double hiddenLayer[numHiddenLayers][numHiddenNodes];
