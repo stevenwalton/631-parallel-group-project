@@ -13,14 +13,9 @@ class LinearLayer
         math_funcs math;
         int num_inputs;
         int num_neurons;
-        int learning_rate = 0;
-        //float bias = 0;
-        //float bias_grad = 0;
-        //float out_bias = 0;
-        //float out_bias_grad = 0;
-
-        //int num_weights = 0;
-        //int num_input_weights = 0;
+	//not sure learning rate should be a layer attribute
+	//however, I'm setting it to 3 as default just to check that its working
+        int learning_rate = 3; 
 
         std::vector<struct node> neurons;
         //std::vector<struct node> output_nodes;
@@ -30,11 +25,15 @@ class LinearLayer
         void initializeLayer();
         // Main Components
         void forward(std::vector<float>);
-        void backward(std::vector<struct node>);
+	void computeDeltas(std::vector<float>, std::vector<std::vector<float>>);
+        void updateWeights(std::vector<float>);
+	//void backward(std::vector<struct node>); //backward will be a method of sequential
         void zeroGrad();
-
+	
         // Helper Classes
         /*
+	 *I don't think this connection functions are needed
+	 *
 	void connect(std::vector<struct node> input)
                      {std::copy(input_nodes.begin(), 
                       input_nodes.end(), 
@@ -43,12 +42,6 @@ class LinearLayer
                      {std::copy(input_nodes.begin(), 
                       input_nodes.end(), 
                       back_inserter(x));};
-        void SetOutputWeights(std::vector<struct node>);
-        
-        std::vector<struct node> Get_Input()
-                     {return input_nodes;}
-        std::vector<struct node> Get_Output()
-                     {return output_nodes;}
         */
         std::vector<struct node> getNeurons()
                      {return neurons;}
@@ -58,7 +51,8 @@ class LinearLayer
 	void printBias();
         void printNodeWeights(struct node);
 	std::vector<float> getActivations();
-
+	std::vector<float> getDeltas();
+	std::vector<std::vector<float>> getWeights();
 };
 
 #endif

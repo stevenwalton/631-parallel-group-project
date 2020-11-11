@@ -8,7 +8,8 @@ struct node
     float activation;
     float bias;
     std::vector<float> weight;
-    std::vector<float> weight_grad;
+    //std::vector<float> weight_grad;
+    float delta; //gradient
     float error;
 };
 

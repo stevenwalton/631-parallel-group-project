@@ -83,33 +83,47 @@ void LinearLayer::forward(std::vector<float> input)
         }
         i.activation = math.sigmoid(i.activation + i.bias);
     }
-    // Output Layer
-    /*for (node& i : output_nodes)
-    {
-        ii = 0;
-        i.activation = 0;
-        for (node& j : input_nodes)
-        {
-            i.activation += (j.weight[ii] * j.activation);
-            ii++;
-        }
-        i.activation = math.sigmoid(i.activation + in_bias);
-    }*/
 }
 
-void LinearLayer::backward(std::vector<struct node> y) 
+//I'm using independent deltas and weights vectors here instead of passing an actual
+//node vector because the output layer is computed differently
+//this way we can just pass the derivative of the loss function as the delta and a
+//corresponding array of weights just set to 1
+void LinearLayer::computeDeltas(std::vector<float> deltas, std::vector<std::vector<float>> weights) 
 {
-    // Output Layer
-    /*Zero_Grad(); // Kills gradient accumulation, which we aren't doing
-    math.MSE(output_nodes, y);
-    size_t ii = 0;
-    // TODO
-    for (node& i : output_nodes)
-    {
-        for (size_t j = 0; j < this->num_output_weights; ++j)
-        {
-        }
-    }*/
+	//Zero_Grad(); // Kills gradient accumulation, which we aren't doing
+	
+	//on an inner node, that is, not the output node
+	size_t jj;
+	size_t ii = 0;
+	for (node& i : this->neurons)
+	{
+		jj = 0;
+		i.error = 0.0;
+		for (float d : deltas)
+		{
+			i.error += d * weights[ii][jj];
+			jj++;
+		}
+		i.delta = i.error * math.derivative_sigmoid(i.activation);
+	}
+}
+
+/*
+ * The complement of the computeDeltas function.
+ * This function will update the weights of a layer based on the computed deltas.
+ * As such, it must be called after computeDeltas.
+ */
+void LinearLayer::updateWeights(std::vector<float> input)
+{
+	for (node& n : this->neurons)
+	{
+		n.bias += n.delta * this->learning_rate;
+		for (size_t i = 0; i < n.weight.size(); i++)
+		{
+			n.weight[i] += input[i] * n.delta * this->learning_rate;
+		}
+	}
 }
 
 /******************** Helper Functions ********************/
@@ -121,6 +135,26 @@ std::vector<float> LinearLayer::getActivations()
 	}
 	return activations;
 }
+
+std::vector<float> LinearLayer::getDeltas()
+{
+        std::vector<float> deltas;
+        for (node& n: this->neurons){
+            deltas.emplace_back(n.delta);
+        }
+        return deltas;
+}
+
+std::vector<std::vector<float>> LinearLayer::getWeights()
+{
+        std::vector<std::vector<float>> weights;
+        for (node& n: this->neurons){
+            weights.emplace_back(n.weight);
+        }
+        return weights;
+}
+
+//vector<vector<data_type>> vec;
 
 void LinearLayer::printActivations()
 {
