@@ -22,9 +22,12 @@ void LinearLayer::initializeLayer()
         i.activation = 0;
         i.error = 0;
 	i.bias = math.unit_random();
-        // 
+        // Initialize then fill
+        i.weight.resize(this->num_inputs);
+        // No real speedup (unsurprising)
+        #pragma omp parallel for
         for (size_t j = 0; j < this->num_inputs; ++j)
-            i.weight.emplace_back(math.unit_random());
+            i.weight[j] = math.unit_random();
     }
 }
 
@@ -107,6 +110,19 @@ void LinearLayer::computeDeltas(std::vector<float> deltas, std::vector<std::vect
 		}
 		i.delta = i.error * math.derivative_sigmoid(i.activation);
 	}
+        /*
+	for (node& i : this->neurons)
+	{
+		jj = 0;
+		i.error = 0.0;
+		for (float d : deltas)
+		{
+			i.error += d * weights[ii][jj];
+			jj++;
+		}
+		i.delta = i.error * math.derivative_sigmoid(i.activation);
+	}
+        */
 }
 
 /*
@@ -116,14 +132,29 @@ void LinearLayer::computeDeltas(std::vector<float> deltas, std::vector<std::vect
  */
 void LinearLayer::updateWeights(std::vector<float> input)
 {
-	for (node& n : this->neurons)
-	{
-		n.bias += n.delta * this->learning_rate;
-		for (size_t i = 0; i < n.weight.size(); i++)
-		{
-			n.weight[i] += input[i] * n.delta * this->learning_rate;
-		}
-	}
+    // No difference in range based vs iterator based
+    for (node& n : this->neurons)
+    {
+        n.bias += n.delta * this->learning_rate;
+        for (size_t i = 0; i < n.weight.size(); i++)
+        {
+                n.weight[i] += input[i] * n.delta * this->learning_rate;
+        }
+    }
+
+    /*
+    // 3x slower
+    //#pragma omp parallel for
+    for (auto n = this->neurons.begin(); n < this->neurons.end(); ++n)
+    {
+        (*n).bias += (*n).delta * this->learning_rate;
+        // 10x slower
+        //#pragma omp parallel for 
+        for (size_t i = 0; i < (*n).weight.size(); ++i)
+            (*n).weight[i] += input[i] * (*n).delta * this->learning_rate;
+
+    }
+    */
 }
 
 /******************** Helper Functions ********************/

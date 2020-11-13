@@ -60,7 +60,7 @@ int main(int argc, const char * argv[])
     cout << endl;
     model.printModel();
 
-    float epochLoss;
+    //float epochLoss;
     int epochHits; 
     vector<float> predictions;
     
@@ -71,7 +71,7 @@ int main(int argc, const char * argv[])
     float accuracy; 
     for (int n = 0; n < n_epochs; n++)
     {
-    	epochLoss = 0.0;
+    	//epochLoss = 0.0;
 	epochHits = 0;
 	for (size_t i = 0; i < features.size(); i++)
 	{       
@@ -85,11 +85,11 @@ int main(int argc, const char * argv[])
 	}
         accuracy = (float)epochHits/(float)features.size();
 	cout << "Epoch " << n << " Accuracy: " << accuracy << "\n";
-        if (accuracy == 1)
-        {
-            cout << "Reached accuracy of 1. Stopping early" << endl;
-            break;
-        }
+        //if (accuracy == 1)
+        //{
+        //    cout << "Reached accuracy of 1. Stopping early" << endl;
+        //    break;
+        //}
     }
     return 0;
 }
