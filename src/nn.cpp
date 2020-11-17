@@ -142,20 +142,22 @@ void LinearLayer::updateWeights(std::vector<float> input)
         }
     }
 
-    /*
     // 3x slower
     //#pragma omp parallel for
+    //#pragma omp parallel for
+    /*
     for (auto n = this->neurons.begin(); n < this->neurons.end(); ++n)
     {
         (*n).bias += (*n).delta * this->learning_rate;
         // 10x slower
-        //#pragma omp parallel for 
+        #pragma omp parallel for 
         for (size_t i = 0; i < (*n).weight.size(); ++i)
             (*n).weight[i] += input[i] * (*n).delta * this->learning_rate;
 
     }
     */
 }
+
 
 /******************** Helper Functions ********************/
 std::vector<float> LinearLayer::getActivations()

@@ -20,6 +20,44 @@ std::vector<float> Sequential::forward(std::vector<float> inputs)
 	return current_input;
 }
 
+std::vector<std::vector<float> > Sequential::batchForward(std::vector<std::vector<float> > batch_inputs)
+{
+    std::vector<std::vector<float> > batch_preds(this->batch_size);
+    for (size_t i = 0; i < this->batch_size; ++i)
+        batch_preds[i] = (this->forward(batch_inputs[i]));
+    return batch_preds;
+
+}
+
+void Sequential::batchBackward(std::vector<std::vector<float> > batch_preds,
+                               std::vector<std::vector<float> > batch_labels,
+                               std::vector<std::vector<float> > batch_inputs)
+{
+
+    std::vector<float> mean_der(this->batch_size); 
+    std::vector<float> mean_inputs(this->batch_size); 
+    size_t s = (batch_preds[0]).size();
+    for (size_t i = 0; i < this->batch_size; ++i)
+    {
+        for (size_t j = 0; j < s; ++j)
+            mean_inputs[j] += batch_inputs[i][j];
+    }
+    for (size_t i = 0; i < s; ++i)
+        mean_inputs[i] /= this->batch_size;
+
+    for (size_t i = 0; i < this->batch_size; ++i)
+    {
+        std::vector<float> lfd = lossFunctionDerivative(batch_preds[i], batch_labels[i]);
+         for (size_t j = 0; j < s; ++j)
+             mean_der[j] += lfd[j];
+    }
+    for (size_t i = 0; i < s; ++i)
+        mean_der[i] /= this->batch_size;
+    printf("Mean Der[0] %f\t", mean_der[0]);
+    printf("Mean in[0] %f\n", mean_inputs[0]);
+    this->backward(mean_der, mean_inputs);
+}
+
 void Sequential::backward(std::vector<float> error, std::vector<float> inputs)
 {
 	//Creating the fake 'weights' vector of vectors for the 
@@ -55,6 +93,17 @@ void Sequential::trainIteration(std::vector<float> training_inputs, std::vector<
 	std::vector<float> preds = this->forward(training_inputs);
 	
 	this->backward(lossFunctionDerivative(preds, labels), training_inputs);
+}
+
+void Sequential::batchTrainIteration(std::vector<std::vector<float> > batch_training_inputs,
+                                     std::vector<std::vector<float> > batch_labels)
+{
+    std::vector<std::vector<float> > batch_preds = this->batchForward(batch_training_inputs);
+
+    //std::vector<std::vector<float> > loss;
+    //for (size_t i = 0; i < this->batch_size; ++i)
+    //    loss.emplace_back(batch_preds[i], batch_labels[i]);
+    this->batchBackward(batch_preds, batch_labels, batch_training_inputs);
 }
 
 std::vector<float> Sequential::lossFunctionDerivative(std::vector<float> predictions, std::vector<float> labels)

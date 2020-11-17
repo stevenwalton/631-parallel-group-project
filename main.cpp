@@ -45,7 +45,8 @@ int main(int argc, const char * argv[])
         cout << "Epochs = 200\n\n";
         dataset = "moons_dataset.txt";
     	learning_rate = 0.3f;
-        n_epochs = 200;
+        //n_epochs = 200;
+        n_epochs = 5;
     }
 
     //vectors to hold the data
@@ -57,12 +58,16 @@ int main(int argc, const char * argv[])
     /************* Define Model *********************/
     Sequential model;
     defineModel(model, learning_rate);
+    size_t batch_size = 10;
+    model.setBatchSize(batch_size);
     cout << endl;
     model.printModel();
 
     //float epochLoss;
     int epochHits; 
     vector<float> predictions;
+    vector<vector<float> > batch_preds;
+    int batch_loops = features.size() / batch_size;
     
     /************* Training  *********************/
 
@@ -71,17 +76,45 @@ int main(int argc, const char * argv[])
     float accuracy; 
     for (int n = 0; n < n_epochs; n++)
     {
+        epochHits = 0;
+        for (size_t i = 0; i < batch_loops; ++i)
+        {
+            vector<vector<float> > feature_vec(batch_size);
+            vector<vector<float> > label_vec(batch_size);
+            for (size_t j = 0; j < batch_size; ++j)
+            {
+                feature_vec[j] = features[(i*batch_size)+j];
+                label_vec[j] = labels[(i*batch_size)+j];
+            }
+            model.batchTrainIteration(feature_vec, label_vec);
+            batch_preds = model.batchForward(feature_vec);
+            for (size_t j = 0; j < batch_size; ++j)
+            {
+                if(round(batch_preds[j][0]) == label_vec[j][0])
+                    epochHits += 1;
+            }
+        }
+        /*
+        for (size_t i = 0; i < features.size(); ++i)
+        {
+            predictions = model.forward(features[i]);
+            if (round(predictions[0]) == labels[i][0])
+                epochHits += 1;
+        }
+        */
+        accuracy = (float)epochHits/(float)features.size();
+	cout << "Epoch " << n << " Accuracy: " << accuracy << "\n";
+        /*
     	//epochLoss = 0.0;
 	epochHits = 0;
 	for (size_t i = 0; i < features.size(); i++)
 	{       
-		model.trainIteration(features[i], labels[i]);
-		predictions = model.forward(features[i]);
-		
-		//looking for hits
-		//this needed to be adapted for multiple outputs
-		if(round(predictions[0]) == labels[i][0])
-			epochHits += 1;
+		//model.trainIteration(features[i], labels[i]);
+                predictions = model.forward(features[i]);
+                //looking for hits
+                //this needed to be adapted for multiple outputs
+                if(round(predictions[0]) == labels[i][0])
+                        epochHits += 1;
 	}
         accuracy = (float)epochHits/(float)features.size();
 	cout << "Epoch " << n << " Accuracy: " << accuracy << "\n";
@@ -90,6 +123,7 @@ int main(int argc, const char * argv[])
         //    cout << "Reached accuracy of 1. Stopping early" << endl;
         //    break;
         //}
+        */
     }
     return 0;
 }
