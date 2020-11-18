@@ -33,7 +33,7 @@ void Sequential::batchBackward(std::vector<std::vector<float> > batch_preds,
                                std::vector<std::vector<float> > batch_labels,
                                std::vector<std::vector<float> > batch_inputs)
 {
-    size_t s = (batch_preds[0]).size(); // Size of our data
+    /*this little note*/
     std::vector<float> mb_mean(s,0);
     std::vector<float> mb_var(s,0);
     std::vector<std::vector<float> > mb_norm;
@@ -59,10 +59,10 @@ void Sequential::batchBackward(std::vector<std::vector<float> > batch_preds,
     for (size_t i = 0; i < this->batch_size; ++i)
         for (size_t j = 0; j < s; ++j)
             mb_norm[i][j] = (batch_preds[i][j] - mb_mean[j]) / sqrt(mb_var[j] + epsilon);
-
+    
     for (size_t i = 0; i < this->batch_size; ++i)
 	this->backward(lossFunctionDerivative(batch_preds[i], batch_labels[i]), batch_inputs[i], mb_norm[i]);
-
+    
 }
 
 void Sequential::backward(std::vector<float> error, std::vector<float> inputs)
