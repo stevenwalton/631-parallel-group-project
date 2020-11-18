@@ -33,29 +33,68 @@ void Sequential::batchBackward(std::vector<std::vector<float> > batch_preds,
                                std::vector<std::vector<float> > batch_labels,
                                std::vector<std::vector<float> > batch_inputs)
 {
+    size_t s = (batch_preds[0]).size(); // Size of our data
+    std::vector<float> mb_mean(s,0);
+    std::vector<float> mb_var(s,0);
+    std::vector<std::vector<float> > mb_norm;
+    double epsilon = 0.00001;
+    for (size_t i = 0; i < this->batch_size; ++i)
+        mb_norm.emplace_back(mb_mean);
 
-    std::vector<float> mean_der(this->batch_size); 
-    std::vector<float> mean_inputs(this->batch_size); 
+    for (size_t i = 0; i < this->batch_size; ++i)
+        for (size_t j = 0; j < s; ++j)
+            mb_mean[j] += batch_preds[i][j];
+
+    for (size_t i = 0; i < s; ++i)
+        mb_mean[i] /= this->batch_size;
+
+    for (size_t i = 0; i < this->batch_size; ++i)
+        for (size_t j = 0; j < s; ++j)
+            mb_var[j] += pow(batch_preds[i][j] - mb_mean[j], 2.);
+
+    // epsilon = 0
+    for (size_t i = 0; i < s; ++i)
+        mb_var[i] = mb_var[i] / this->batch_size;
+
+    for (size_t i = 0; i < this->batch_size; ++i)
+        for (size_t j = 0; j < s; ++j)
+            mb_norm[i][j] = (batch_preds[i][j] - mb_mean[j]) / sqrt(mb_var[j] + epsilon);
+
+    for (size_t i = 0; i < this->batch_size; ++i)
+    {
+        std::vector<float> lfd = lossFunctionDerivative(mb_norm[i], batch_labels[i]);
+        this->backward(lfd, batch_inputs[i]);
+    }
+
+    /*
     size_t s = (batch_preds[0]).size();
+    std::cout << batch_preds.size() << " " << batch_preds[0].size() << std::endl;
+    std::vector<float> mean_der(s, 0); 
+    std::vector<float> mean_inputs(s, 0); 
+    #pragma omp parallel for
     for (size_t i = 0; i < this->batch_size; ++i)
     {
         for (size_t j = 0; j < s; ++j)
             mean_inputs[j] += batch_inputs[i][j];
     }
+    #pragma omp parallel for
     for (size_t i = 0; i < s; ++i)
         mean_inputs[i] /= this->batch_size;
 
+    #pragma omp parallel for
     for (size_t i = 0; i < this->batch_size; ++i)
     {
         std::vector<float> lfd = lossFunctionDerivative(batch_preds[i], batch_labels[i]);
          for (size_t j = 0; j < s; ++j)
              mean_der[j] += lfd[j];
     }
+    #pragma omp parallel for
     for (size_t i = 0; i < s; ++i)
         mean_der[i] /= this->batch_size;
-    printf("Mean Der[0] %f\t", mean_der[0]);
-    printf("Mean in[0] %f\n", mean_inputs[0]);
+    //printf("Mean Der[0] %f\t", mean_der[0]);
+    //printf("Mean in[0] %f\n", mean_inputs[0]);
     this->backward(mean_der, mean_inputs);
+    */
 }
 
 void Sequential::backward(std::vector<float> error, std::vector<float> inputs)
