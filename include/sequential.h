@@ -16,6 +16,7 @@ class Sequential
 		std::vector<float> forward(std::vector<float>);
                 std::vector<std::vector<float> > batchForward(std::vector<std::vector<float> >);
 		void backward(std::vector<float>, std::vector<float>);
+		void backward(std::vector<float>, std::vector<float>, std::vector<float>);
                 void batchBackward(std::vector<std::vector<float> >,
                                    std::vector<std::vector<float> >,
                                    std::vector<std::vector<float> >);

@@ -27,6 +27,7 @@ class LinearLayer
         void forward(std::vector<float>);
 	void computeDeltas(std::vector<float>, std::vector<std::vector<float>>);
         void updateWeights(std::vector<float>);
+        void updateWeights(std::vector<float>, std::vector<float>);
         void zeroGrad();
 	
         // Helper Classes

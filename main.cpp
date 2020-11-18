@@ -45,8 +45,8 @@ int main(int argc, const char * argv[])
         cout << "Epochs = 200\n\n";
         dataset = "moons_dataset.txt";
     	learning_rate = 0.3f;
-        //n_epochs = 100;
-        n_epochs = 5;
+        n_epochs = 200;
+        //n_epochs = 5;
     }
 
     //vectors to hold the data

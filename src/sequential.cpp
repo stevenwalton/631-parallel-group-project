@@ -37,7 +37,7 @@ void Sequential::batchBackward(std::vector<std::vector<float> > batch_preds,
     std::vector<float> mb_mean(s,0);
     std::vector<float> mb_var(s,0);
     std::vector<std::vector<float> > mb_norm;
-    double epsilon = 0.00001;
+    double epsilon = 0.0001;
     for (size_t i = 0; i < this->batch_size; ++i)
         mb_norm.emplace_back(mb_mean);
 
@@ -61,40 +61,8 @@ void Sequential::batchBackward(std::vector<std::vector<float> > batch_preds,
             mb_norm[i][j] = (batch_preds[i][j] - mb_mean[j]) / sqrt(mb_var[j] + epsilon);
 
     for (size_t i = 0; i < this->batch_size; ++i)
-    {
-        std::vector<float> lfd = lossFunctionDerivative(mb_norm[i], batch_labels[i]);
-        this->backward(lfd, batch_inputs[i]);
-    }
+	this->backward(lossFunctionDerivative(batch_preds[i], batch_labels[i]), batch_inputs[i], mb_norm[i]);
 
-    /*
-    size_t s = (batch_preds[0]).size();
-    std::cout << batch_preds.size() << " " << batch_preds[0].size() << std::endl;
-    std::vector<float> mean_der(s, 0); 
-    std::vector<float> mean_inputs(s, 0); 
-    #pragma omp parallel for
-    for (size_t i = 0; i < this->batch_size; ++i)
-    {
-        for (size_t j = 0; j < s; ++j)
-            mean_inputs[j] += batch_inputs[i][j];
-    }
-    #pragma omp parallel for
-    for (size_t i = 0; i < s; ++i)
-        mean_inputs[i] /= this->batch_size;
-
-    #pragma omp parallel for
-    for (size_t i = 0; i < this->batch_size; ++i)
-    {
-        std::vector<float> lfd = lossFunctionDerivative(batch_preds[i], batch_labels[i]);
-         for (size_t j = 0; j < s; ++j)
-             mean_der[j] += lfd[j];
-    }
-    #pragma omp parallel for
-    for (size_t i = 0; i < s; ++i)
-        mean_der[i] /= this->batch_size;
-    //printf("Mean Der[0] %f\t", mean_der[0]);
-    //printf("Mean in[0] %f\n", mean_inputs[0]);
-    this->backward(mean_der, mean_inputs);
-    */
 }
 
 void Sequential::backward(std::vector<float> error, std::vector<float> inputs)
@@ -125,6 +93,36 @@ void Sequential::backward(std::vector<float> error, std::vector<float> inputs)
 	}
 	//updating the first layer
 	layers[0].updateWeights(inputs);
+}
+
+void Sequential::backward(std::vector<float> error, std::vector<float> inputs, std::vector<float> bn)
+{
+	//Creating the fake 'weights' vector of vectors for the 
+	//output layer
+	std::vector<std::vector<float>> current_weights;
+	//for(float f : error)
+        for (size_t i = error.size(); i != 0; --i) 
+	{
+		std::vector<float> w{1.0};
+		current_weights.emplace_back(w);
+	}
+	//computing deltas
+	std::vector<float> current_error(error.begin(), error.end());
+	//careful with size_t as int leads to unexpected behaviour
+	//apparently can't go negative
+	for(int i = layers.size()-1; i >= 0; i--)
+	{
+		layers[i].computeDeltas(current_error, current_weights);
+		current_error = layers[i].getDeltas();
+		current_weights = layers[i].getWeights();
+	}
+	//updating the weights for all but the first (input) layer
+	for(size_t i = layers.size()-1; i > 0; i--)
+	{
+		layers[i].updateWeights(layers[i-1].getActivations());
+	}
+	//updating the first layer
+	layers[0].updateWeights(inputs, bn);
 }
 
 void Sequential::trainIteration(std::vector<float> training_inputs, std::vector<float> labels)

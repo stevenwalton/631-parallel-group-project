@@ -158,6 +158,26 @@ void LinearLayer::updateWeights(std::vector<float> input)
     */
 }
 
+void LinearLayer::updateWeights(std::vector<float> input, std::vector<float> bn)
+{
+    for (size_t i = 0; i < this->neurons.size(); ++i)
+    {
+        this->neurons[i].bias += this->neurons[i].delta * this->learning_rate * bn[i];
+        for (size_t j = 0; j < this->neurons[i].weight.size(); ++j)
+            this->neurons[i].weight[j] += input[j] * this->neurons[i].delta * this->learning_rate * bn[i];
+    }
+    /*
+    for (node& n : this->neurons)
+    {
+        n.bias += n.delta * this->learning_rate;
+        for (size_t i = 0; i < n.weight.size(); i++)
+        {
+                n.weight[i] += input[i] * n.delta * this->learning_rate * bn[i];
+        }
+    }
+    */
+}
+
 
 /******************** Helper Functions ********************/
 std::vector<float> LinearLayer::getActivations()
