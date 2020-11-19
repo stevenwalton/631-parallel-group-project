@@ -70,16 +70,16 @@ void LinearLayer::forward(std::vector<float> input)
     
     assert(input.size() == this->num_inputs);
     size_t ii = 0;
-    for (node& i : this->neurons)
+    for (node& n : this->neurons)
     {
         ii = 0;
-        i.activation = 0;
+        n.activation = 0;
         for (float act : input)
         {
-            i.activation += (i.weight[ii] * act);
+            n.activation += (n.weight[ii] * act);
             ii++;
         }
-        i.activation = math.sigmoid(i.activation + i.bias);
+        n.activation = math.sigmoid(n.activation + n.bias);
     }
 }
 
@@ -96,16 +96,18 @@ void LinearLayer::computeDeltas(std::vector<float> deltas, std::vector<std::vect
 	
 	size_t jj;
 	size_t ii = 0;
-	for (node& i : this->neurons)
+	//std::cout << "weights = " << weights.size() << " weights[0] = " << weights[0].size() << "\n";
+	for (node& n : this->neurons)
 	{
 		jj = 0;
-		i.error = 0.0;
+		n.error = 0.0;
 		for (float d : deltas)
 		{
-			i.error += d * weights[ii][jj];
+			n.error += d * weights[jj][ii];
 			jj++;
 		}
-		i.delta = i.error * math.derivative_sigmoid(i.activation);
+		ii++;
+		n.delta = n.error * math.derivative_sigmoid(n.activation);
 	}
 }
 

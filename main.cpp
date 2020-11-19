@@ -9,6 +9,10 @@
 
 using namespace std;
 
+double crossEntropyLoss(double y, double y_hat){
+    return -(y * log(y_hat) + (1-y) * log(1 - y_hat));
+}
+
 void defineModel(Sequential &model, float learning_rate)
 {
     //creating the layers
@@ -80,11 +84,12 @@ int main(int argc, const char * argv[])
 		
 		//looking for hits
 		//this needed to be adapted for multiple outputs
+		epochLoss += crossEntropyLoss(labels[i][0], predictions[0]);
 		if(round(predictions[0]) == labels[i][0])
 			epochHits += 1;
 	}
         accuracy = (float)epochHits/(float)features.size();
-	cout << "Epoch " << n << " Accuracy: " << accuracy << "\n";
+	cout << "Epoch " << n << " Accuracy: " << accuracy << " Loss: " << epochLoss/features.size()<< "\n";
         if (accuracy == 1)
         {
             cout << "Reached accuracy of 1. Stopping early" << endl;
