@@ -52,7 +52,7 @@ void LinearLayer::zeroGrad()
     }*/
 }
 
-void LinearLayer::forward(std::vector<float> input)
+void LinearLayer::forward(std::vector<std::vector<float>> batch_inputs)
 {
     /*
      * Performs the feed forward section of the network
@@ -71,18 +71,21 @@ void LinearLayer::forward(std::vector<float> input)
     //std::cout << input.size() << std::endl;
     //std::cout << this->num_inputs << std::endl; 
     
-    assert(input.size() == this->num_inputs);
-    size_t ii = 0;
-    for (node& i : this->neurons)
-    {
-        ii = 0;
-        i.activation = 0;
-        for (float act : input)
-        {
-            i.activation += (i.weight[ii] * act);
-            ii++;
-        }
-        i.activation = math.sigmoid(i.activation + i.bias);
+    assert(batch_inputs[0].size() == this->num_inputs);
+    size_t i, j;
+    //iterating over all training instances in the batch
+    for (i = 0; i < batch_inputs.size(); i++){
+    	for (node& n : this->neurons)
+    	{	
+        	j = 0;
+        	n.activation[i] = 0;
+        	for (float act : batch_inputs[i])
+        	{
+            		n.activation[i] += (n.weight[j] * act);
+            		j++;
+        	}	
+        	n.activation[i] = math.sigmoid(n.activation[i] + n.bias);
+    	}
     }
 }
 
@@ -99,30 +102,17 @@ void LinearLayer::computeDeltas(std::vector<float> deltas, std::vector<std::vect
 	
 	size_t jj;
 	size_t ii = 0;
-	for (node& i : this->neurons)
+	for (node& n : this->neurons)
 	{
 		jj = 0;
-		i.error = 0.0;
+		n.error = 0.0;
 		for (float d : deltas)
 		{
-			i.error += d * weights[ii][jj];
+			n.error += d * weights[ii][jj];
 			jj++;
 		}
-		i.delta = i.error * math.derivative_sigmoid(i.activation);
+		n.delta = n.error * math.derivative_sigmoid(n.activation);
 	}
-        /*
-	for (node& i : this->neurons)
-	{
-		jj = 0;
-		i.error = 0.0;
-		for (float d : deltas)
-		{
-			i.error += d * weights[ii][jj];
-			jj++;
-		}
-		i.delta = i.error * math.derivative_sigmoid(i.activation);
-	}
-        */
 }
 
 /*
