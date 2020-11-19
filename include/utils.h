@@ -5,3 +5,5 @@
 void readDataset(std::string, 
                  std::vector<std::vector<float>>&, 
                  std::vector<std::vector<float>>&);
+
+void printFloatVector(std::vector<float>);

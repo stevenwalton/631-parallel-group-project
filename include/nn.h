@@ -11,24 +11,22 @@ class LinearLayer
 {
     private:
         math_funcs math;
-        size_t num_inputs;
-        size_t num_neurons;
+        int num_inputs;
+        int num_neurons;
 	//not sure learning rate should be a layer attribute
-	//however, I'm setting it to 3 as default just to check that its working
         float learning_rate; 
-
+	int batch_size;
         std::vector<struct node> neurons;
-        //std::vector<struct node> output_nodes;
 
     public:
-        LinearLayer(int, int, float=0.3);
+        LinearLayer(int, int, float=0.3, int=32);
         void initializeLayer();
         // Main Components
-        void forward(std::vector<float>);
-	void computeDeltas(std::vector<float>, std::vector<std::vector<float>>);
-        void updateWeights(std::vector<float>);
-        void updateWeights(std::vector<float>, std::vector<float>);
-        void zeroGrad();
+        void forward(std::vector<std::vector<float>>);
+	void computeDeltas(std::vector<std::vector<float>>, std::vector<std::vector<float>>);
+        void updateWeights(std::vector<std::vector<float>>);
+        void updateWeightsLegacy(std::vector<std::vector<float>>);
+	void zeroGrad();
 	
         // Helper Classes
         // Printers
@@ -39,8 +37,8 @@ class LinearLayer
         // Setters
 	void setLearningRate(float);
         // Getters 
-	std::vector<float> getActivations();
-	std::vector<float> getDeltas();
+	std::vector<std::vector<float>> getActivations();
+	std::vector<std::vector<float>> getDeltas();
 	std::vector<std::vector<float>> getWeights();
         inline std::vector<struct node> getNeurons() {return neurons;}
 	inline float getLearningRate(){return this->learning_rate;};

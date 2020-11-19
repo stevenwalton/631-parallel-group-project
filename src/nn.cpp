@@ -4,30 +4,37 @@
 #include "math_funcs.h"
 #include <cassert>
 
-LinearLayer::LinearLayer(int num_inputs, int num_outputs, float lr)
+LinearLayer::LinearLayer(int num_inputs, int num_outputs, float lr, int batch_size)
 {
     this->num_inputs = num_inputs;
     this->num_neurons = num_outputs;
     this->learning_rate = lr;
+    this->batch_size = batch_size;
     neurons.resize(this->num_neurons);
-    //output_nodes.resize(this->num_outputs);
     initializeLayer();
 }
 
 void LinearLayer::initializeLayer()
 {
     // TODO: Find faster random
-    for (node& i : this->neurons)
+    for (node& n : this->neurons)
     {
-        i.activation = 0;
-        i.error = 0;
-	i.bias = math.unit_random();
+	int j;
+        n.activation.resize(this->batch_size);
+        n.error.resize(this->batch_size);
+	n.delta.resize(this->batch_size);
+	for (j = 0; j < this->batch_size; j++){
+		n.activation[j] = 0.0;
+		n.error[j] = 0.0;
+		n.delta[j] = 0.0;
+	}
+	n.bias = math.unit_random();
         // Initialize then fill
-        i.weight.resize(this->num_inputs);
+        n.weight.resize(this->num_inputs);
         // No real speedup (unsurprising)
-        #pragma omp parallel for
-        for (size_t j = 0; j < this->num_inputs; ++j)
-            i.weight[j] = math.unit_random();
+        //#pragma omp parallel for
+        for (j = 0; j < this->num_inputs; ++j)
+            n.weight[j] = math.unit_random();
     }
 }
 
@@ -68,7 +75,7 @@ void LinearLayer::forward(std::vector<std::vector<float>> batch_inputs)
      * I think this is good because we can store everything in the class itself.
      * - Steven
      */
-    //std::cout << input.size() << std::endl;
+    //std::cout << batch_inputs[0].size() << std::endl;
     //std::cout << this->num_inputs << std::endl; 
     
     assert(batch_inputs[0].size() == this->num_inputs);
@@ -77,13 +84,13 @@ void LinearLayer::forward(std::vector<std::vector<float>> batch_inputs)
     for (i = 0; i < batch_inputs.size(); i++){
     	for (node& n : this->neurons)
     	{	
-        	j = 0;
-        	n.activation[i] = 0;
-        	for (float act : batch_inputs[i])
-        	{
-            		n.activation[i] += (n.weight[j] * act);
-            		j++;
-        	}	
+        	//j = 0;
+        	n.activation[i] = math.dot_product(n.weight, batch_inputs[i]);
+        	//for (float act : batch_inputs[i])
+        	//{
+            	//	n.activation[i] += (n.weight[j] * act);
+            	//	j++;
+		//}	
         	n.activation[i] = math.sigmoid(n.activation[i] + n.bias);
     	}
     }
@@ -96,22 +103,34 @@ This way, for the output layer, we can just pass the derivative of the loss func
 as the delta and a corresponding array of weights set to 1.
 For all other layers we pass the deltas and weights of the next layer.
 */
-void LinearLayer::computeDeltas(std::vector<float> deltas, std::vector<std::vector<float>> weights) 
+void LinearLayer::computeDeltas(std::vector<std::vector<float>> deltas, std::vector<std::vector<float>> weights) 
 {
 	//Zero_Grad(); // Kills gradient accumulation, which we aren't doing
 	
-	size_t jj;
-	size_t ii = 0;
-	for (node& n : this->neurons)
-	{
-		jj = 0;
-		n.error = 0.0;
-		for (float d : deltas)
+	size_t ii, jj, i;
+	//computing for each training instance
+	for (i = 0; i < deltas.size(); i++){
+		//ii tracks the number of neurons in current layer
+		ii = 0;
+		//std::cout << "i = " << i << "\n";
+		for (node& n : this->neurons)
 		{
-			n.error += d * weights[ii][jj];
-			jj++;
+			//jj tracks number of rows in weights
+			//that is number of neurons in layer where weights came from
+			jj = 0;
+
+			//std::cout << "ii = " << ii << "\n";
+			//std::cout << "delta size = " << deltas[i].size() << "\n";
+			//std::cout << "weights size = " << weights.size() << "\n";
+			//n.error[ii] = math.dot_product(deltas[i], weights[ii]);
+			for (float d : deltas[i])
+			{
+				n.error[i] += d * weights[jj][ii];
+				jj++;
+			}
+			n.delta[i] = n.error[i] * math.derivative_sigmoid(n.activation[i]);
+			ii++;
 		}
-		n.delta = n.error * math.derivative_sigmoid(n.activation);
 	}
 }
 
@@ -120,70 +139,83 @@ void LinearLayer::computeDeltas(std::vector<float> deltas, std::vector<std::vect
  * This function will update the weights of a layer based on the computed deltas.
  * As such, it must be called after computeDeltas.
  */
-void LinearLayer::updateWeights(std::vector<float> input)
+void LinearLayer::updateWeights(std::vector<std::vector<float>> inputs)
 {
-    // No difference in range based vs iterator based
+
+    float delta_sum, input_delta_sum;
+    size_t j, i;
     for (node& n : this->neurons)
     {
-        n.bias += n.delta * this->learning_rate;
-        for (size_t i = 0; i < n.weight.size(); i++)
+	delta_sum = math.vector_sum(n.delta);
+        n.bias += delta_sum * this->learning_rate;
+	input_delta_sum = 0.0;
+	for(j = 0; j < inputs.size(); j++)
+	{
+		//multiplying each input by its corresponding delta and summing everything
+		input_delta_sum += math.vector_sum(inputs[j]) * n.delta[j];
+	}
+
+	for (i = 0; i < n.weight.size(); i++)
         {
-                n.weight[i] += input[i] * n.delta * this->learning_rate;
+		//updating each weight only once per batch
+                n.weight[i] += input_delta_sum * this->learning_rate;
         }
     }
 
-    // 3x slower
-    //#pragma omp parallel for
-    //#pragma omp parallel for
-    /*
-    for (auto n = this->neurons.begin(); n < this->neurons.end(); ++n)
-    {
-        (*n).bias += (*n).delta * this->learning_rate;
-        // 10x slower
-        #pragma omp parallel for 
-        for (size_t i = 0; i < (*n).weight.size(); ++i)
-            (*n).weight[i] += input[i] * (*n).delta * this->learning_rate;
-
-    }
-    */
 }
 
-void LinearLayer::updateWeights(std::vector<float> input, std::vector<float> bn)
+void LinearLayer::updateWeightsLegacy(std::vector<std::vector<float>> inputs)
 {
-    for (size_t i = 0; i < this->neurons.size(); ++i)
-    {
-        this->neurons[i].bias += this->neurons[i].delta * this->learning_rate * bn[i];
-        for (size_t j = 0; j < this->neurons[i].weight.size(); ++j)
-            this->neurons[i].weight[j] += input[j] * this->neurons[i].delta * this->learning_rate * bn[i];
-    }
-    /*
+
+    float delta_sum, input_delta_sum;
+    size_t j, i;
     for (node& n : this->neurons)
     {
-        n.bias += n.delta * this->learning_rate;
-        for (size_t i = 0; i < n.weight.size(); i++)
+	for(j = 0; j < inputs.size(); j++)
         {
-                n.weight[i] += input[i] * n.delta * this->learning_rate * bn[i];
-        }
+        	n.bias += n.delta[j] * this->learning_rate;
+		for (i = 0; i < n.weight.size(); i++)
+        	{
+		//	std::cout << inputs[j][i] << " * " << n.delta[j] << " * " << this->learning_rate << "\n";
+			n.weight[i] += inputs[j][i] * n.delta[j] * this->learning_rate;
+		}
+	}
+
     }
-    */
+
 }
 
 
 /******************** Helper Functions ********************/
-std::vector<float> LinearLayer::getActivations()
+std::vector<std::vector<float>> LinearLayer::getActivations()
 {
-	std::vector<float> activations;
-	for (node& n: this->neurons){
+	std::vector<std::vector<float>> activations;
+	/*for (node& n: this->neurons){
             activations.emplace_back(n.activation);
 	}
 	return activations;
+	*/
+	for (size_t i = 0; i < this->batch_size; i++){
+		std::vector<float> current;
+		for (node& n : this->neurons)
+			current.emplace_back(n.activation[i]);
+		activations.emplace_back(current);
+	}
+	//std::cout << "act size = " << activations.size() << "\n";
+	return activations;
 }
 
-std::vector<float> LinearLayer::getDeltas()
+std::vector<std::vector<float>> LinearLayer::getDeltas()
 {
-        std::vector<float> deltas;
-        for (node& n: this->neurons){
+	std::vector<std::vector<float>> deltas;
+        /*for (node& n: this->neurons){
             deltas.emplace_back(n.delta);
+        }*/
+	for (size_t i = 0; i < this->batch_size; i++){
+                std::vector<float> current;
+                for (node& n : this->neurons)
+                        current.emplace_back(n.delta[i]);
+                deltas.emplace_back(current);
         }
         return deltas;
 }
@@ -197,14 +229,17 @@ std::vector<std::vector<float>> LinearLayer::getWeights()
         return weights;
 }
 
-inline void LinearLayer::printActivations()
+void LinearLayer::printActivations()
 {
-    for (node& i : this->neurons)
-        std::cout << i.activation << " ";
-    std::cout << std::endl;
+    	for (node& i : this->neurons)
+	{
+		for(float f : i.activation)
+        		std::cout << f << " ";
+    		std::cout << std::endl;
+	}
 }
 
-inline void LinearLayer::printBias()
+void LinearLayer::printBias()
 {
     for (node& i : this->neurons)
 	    std::cout << i.bias << " ";
@@ -218,7 +253,7 @@ inline void LinearLayer::printNodeWeights(struct node n)
     std:: cout << std::endl;
 }
 
-inline void LinearLayer::printWeights()
+void LinearLayer::printWeights()
 {
 	for (node& i : this->neurons)
 		this->printNodeWeights(i);

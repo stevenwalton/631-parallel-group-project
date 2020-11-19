@@ -12,10 +12,10 @@ using namespace std;
 void defineModel(Sequential &model, float learning_rate)
 {
     //creating the layers
-    LinearLayer inputLayer(2,3, learning_rate);
-    LinearLayer h1(3,3, learning_rate);
-    LinearLayer h2(3,3, learning_rate);
-    LinearLayer outputLayer(3,1, learning_rate);
+    LinearLayer inputLayer(2,3, learning_rate, model.getBatchSize());
+    LinearLayer h1(3,3, learning_rate, model.getBatchSize());
+    LinearLayer h2(3,3, learning_rate, model.getBatchSize());
+    LinearLayer outputLayer(3,1, learning_rate, model.getBatchSize());
 
     //Adding the layers to the model
     model.add(inputLayer);
@@ -57,9 +57,9 @@ int main(int argc, const char * argv[])
 
     /************* Define Model *********************/
     Sequential model;
-    defineModel(model, learning_rate);
-    size_t batch_size = 10;
+    int batch_size = 1;
     model.setBatchSize(batch_size);
+    defineModel(model, learning_rate);
     cout << endl;
     model.printModel();
 
@@ -77,23 +77,24 @@ int main(int argc, const char * argv[])
     for (int n = 0; n < n_epochs; n++)
     {
         epochHits = 0;
-        for (size_t i = 0; i < batch_loops; ++i)
+        for (int i = 0; i < batch_loops; ++i)
         {
-            vector<vector<float> > feature_vec(batch_size);
-            vector<vector<float> > label_vec(batch_size);
-            for (size_t j = 0; j < batch_size; ++j)
+            vector<vector<float>> feature_vec(batch_size);
+            vector<vector<float>> label_vec(batch_size);
+            for (int j = 0; j < batch_size; ++j)
             {
                 feature_vec[j] = features[(i*batch_size)+j];
                 label_vec[j] = labels[(i*batch_size)+j];
             }
-            model.batchTrainIteration(feature_vec, label_vec);
-            batch_preds = model.batchForward(feature_vec);
-            for (size_t j = 0; j < batch_size; ++j)
+            model.trainIteration(feature_vec, label_vec);
+            batch_preds = model.forward(feature_vec);
+            for (int j = 0; j < batch_size; ++j)
             {
                 if(round(batch_preds[j][0]) == label_vec[j][0])
                     epochHits += 1;
             }
         }
+
         /*
         for (size_t i = 0; i < features.size(); ++i)
         {
@@ -102,9 +103,11 @@ int main(int argc, const char * argv[])
                 epochHits += 1;
         }
         */
+
         accuracy = (float)epochHits/(float)features.size();
 	cout << "Epoch " << n << " Accuracy: " << accuracy << "\n";
-        /*
+    
+    	/*
     	//epochLoss = 0.0;
 	epochHits = 0;
 	for (size_t i = 0; i < features.size(); i++)
