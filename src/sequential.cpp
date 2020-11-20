@@ -14,8 +14,8 @@ std::vector<float> Sequential::forward(std::vector<float> inputs)
 	std::vector<float> current_input(inputs.begin(), inputs.end());
 	for (size_t i = 0; i < layers.size(); ++i)
 	{
-		std::cout << "\nLayer " << i << " weights: \n";
-		layers[i].printWeights();
+		//std::cout << "\nLayer " << i << " weights: \n";
+		//layers[i].printWeights();
 		layers[i].forward(current_input);
 		current_input = layers[i].getActivations();
 	}
@@ -55,11 +55,11 @@ void Sequential::backward(std::vector<float> error, std::vector<float> inputs)
 
 void Sequential::trainIteration(std::vector<float> training_inputs, std::vector<float> labels)
 {
-	std::cout << "Training inputs: \n";
-	printFloatVector(training_inputs);
+	//std::cout << "Training inputs: \n";
+	//printFloatVector(training_inputs);
 	std::vector<float> preds = this->forward(training_inputs);
-	std::cout << "Predictions inputs: \n";
-	printFloatVector(preds);
+	//std::cout << "Predictions inputs: \n";
+	//printFloatVector(preds);
 	this->backward(lossFunctionDerivative(preds, labels), training_inputs);
 }
 
