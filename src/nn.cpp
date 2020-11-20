@@ -176,7 +176,7 @@ void LinearLayer::updateWeightsLegacy(std::vector<std::vector<float>> inputs)
         	n.bias += n.delta[j] * this->learning_rate;
 		for (i = 0; i < n.weight.size(); i++)
         	{
-		//	std::cout << inputs[j][i] << " * " << n.delta[j] << " * " << this->learning_rate << "\n";
+			std::cout << inputs[j][i] << " * " << n.delta[j] << " * " << this->learning_rate << "\n";
 			n.weight[i] += inputs[j][i] * n.delta[j] * this->learning_rate;
 		}
 	}

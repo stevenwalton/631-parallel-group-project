@@ -25,8 +25,8 @@ std::vector<std::vector<float>> Sequential::forward(std::vector<std::vector<floa
                 //        printFloatVector(in);
 
 		
-		//std::cout << "\n Layer " << i << " weights \n\n";
-		//layers[i].printWeights();
+		std::cout << "\nLayer " << i << " weights \n";
+		layers[i].printWeights();
 
 		//std::cout << "\n Layer " << i << " bias \n\n";
 		//layers[i].printBias();
@@ -87,11 +87,13 @@ void Sequential::backward(std::vector<std::vector<float>> error, std::vector<std
 
 void Sequential::trainIteration(std::vector<std::vector<float>> training_inputs, std::vector<std::vector<float>> labels)
 {
+	std::cout << "\nTraining Inputs: \n";
+        for(std::vector<float> in : training_inputs)
+                        printFloatVector(in);
 	std::vector<std::vector<float>> preds = this->forward(training_inputs);
 
 
-	std::cout << "Finished with the forward\n";
-	std::cout << "Final activations: \n";
+	std::cout << "\nPredictions: \n";
 	for(std::vector<float> in : preds)
                         printFloatVector(in);
 
