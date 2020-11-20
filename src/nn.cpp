@@ -177,7 +177,7 @@ inline void LinearLayer::printNodeWeights(struct node n)
     std:: cout << std::endl;
 }
 
-inline void LinearLayer::printWeights()
+void LinearLayer::printWeights()
 {
 	for (node& i : this->neurons)
 		this->printNodeWeights(i);

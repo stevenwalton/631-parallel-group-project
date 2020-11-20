@@ -38,3 +38,10 @@ void readDataset(std::string filename, std::vector<std::vector<float>> &features
     std::cout << "Dataset loaded: " << features.size() << " rows"<< std::endl;
 }
 
+void printFloatVector(std::vector<float> v)
+{
+	std::cout << "\n";
+	for (float f : v)
+		std::cout << f << " ";
+	std::cout << "\n";
+}
