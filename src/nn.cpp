@@ -123,6 +123,7 @@ void LinearLayer::computeDeltas(std::vector<std::vector<float>> deltas, std::vec
 			//std::cout << "delta size = " << deltas[i].size() << "\n";
 			//std::cout << "weights size = " << weights.size() << "\n";
 			//n.error[ii] = math.dot_product(deltas[i], weights[ii]);
+			n.error[i] = 0.0;
 			for (float d : deltas[i])
 			{
 				n.error[i] += d * weights[jj][ii];
