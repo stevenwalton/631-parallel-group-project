@@ -42,10 +42,10 @@ int main(int argc, const char * argv[])
         cout << "Using default values: \n\n";
 	cout << "Dataset = moons_dataset.txt\n";
         cout << "Learning rate = 0.3\n";
-        cout << "Epochs = 200\n\n";
+        cout << "Epochs = 500\n\n";
         dataset = "moons_dataset.txt";
     	learning_rate = 0.3f;
-        n_epochs = 200;
+        n_epochs = 500;
         //n_epochs = 5;
     }
 
