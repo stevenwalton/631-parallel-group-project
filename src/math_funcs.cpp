@@ -40,3 +40,58 @@ void math_funcs::scale_vector(float a, std::vector<float> &v)
     for (size_t i = 0; i < v.size(); ++i)
         v[i] *= a;
 }
+
+void math_funcs::vector_add(std::vector<float> x, 
+                            std::vector<float> y,
+                            std::vector<float>& z)
+{
+    assert(x.size() == y.size() || !(fprintf(stderr, "Cannot add vectors because they are not the same size: %lu, %lu\n", x.size(), y.size())));
+    #pragma omp parallel for schedule(static)
+    for (size_t i = 0; i < x.size(); ++i)
+        z[i] = x[i] + y[i];
+}
+
+void math_funcs::vector_sub(std::vector<float> x, 
+                            std::vector<float> y,
+                            std::vector<float>& z)
+{
+    assert(x.size() == y.size() || !(fprintf(stderr, "Cannot add vectors because they are not the same size: %lu, %lu\n", x.size(), y.size())));
+    #pragma omp parallel for schedule(static)
+    for (size_t i = 0; i < x.size(); ++i)
+        z[i] = x[i] - y[i];
+}
+
+void math_funcs::matrix_add(std::vector<std::vector<float>> x,
+                            std::vector<std::vector<float>> y,
+                            std::vector<std::vector<float>>& z)
+{
+    #pragma omp parallel for schedule(static)
+    for (size_t i = 0; i < x.size(); ++i)
+        for (size_t j = 0; j < x[0].size(); ++j)
+            z[i][j] = x[i][j] + y[i][j];
+}
+
+void math_funcs::matrix_add(float a,
+                            std::vector<std::vector<float>> x,
+                            float b,
+                            std::vector<std::vector<float>> y,
+                            std::vector<std::vector<float>>& z)
+{
+    #pragma omp parallel for schedule(static)
+    for (size_t i = 0; i < x.size(); ++i)
+        for (size_t j = 0; j < x[0].size(); ++j)
+            z[i][j] = (a * x[i][j]) + (b * y[i][j]);
+}
+
+void math_funcs::matrix_sub(std::vector<std::vector<float>> x,
+                            std::vector<std::vector<float>> y,
+                            std::vector<std::vector<float>>& z)
+{
+    #pragma omp parallel for schedule(static)
+    for (size_t i = 0; i < x.size(); ++i)
+    {
+        z[i].resize(x[i].size());
+        for (size_t j = 0; j < x[0].size(); ++j)
+            z[i][j] = x[i][j] - y[i][j];
+    }
+}

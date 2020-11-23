@@ -64,32 +64,14 @@ void LinearLayer::forward(std::vector<std::vector<float>> batch_inputs)
     /*
      * Performs the feed forward section of the network
      * activation = weight * input + bias
-     *
-     *
-     * Maybe this should not be void and return the 
-     * computed activations instead. Something like:
-     *
-     * return this.getActivations();
-     *
-     *
-     * I think this is good because we can store everything in the class itself.
-     * - Steven
      */
-    //std::cout << batch_inputs[0].size() << std::endl;
-    //std::cout << this->num_inputs << std::endl; 
     
-    assert(batch_inputs[0].size() == this->num_inputs);
+    assert(batch_inputs[0].size() == this->num_inputs || !(fprintf(stderr, "Batch size %lu does not match the number of inputs %lu\n", batch_inputs[0].size(), this->num_inputs)));
     //iterating over all training instances in the batch
     for (size_t i = 0; i < batch_inputs.size(); i++){
     	for (node& n : this->neurons)
     	{	
-        	//j = 0;
         	n.activation[i] = math.dot_product(n.weight, batch_inputs[i]);
-        	//for (float act : batch_inputs[i])
-        	//{
-            	//	n.activation[i] += (n.weight[j] * act);
-            	//	j++;
-		//}	
         	n.activation[i] = math.sigmoid(n.activation[i] + n.bias);
     	}
     }

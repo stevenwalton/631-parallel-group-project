@@ -21,6 +21,24 @@ class math_funcs
         float dot_product(float, std::vector<float>, float, std::vector<float>);
         float vector_sum(std::vector<float>);
         void scale_vector(float, std::vector<float>&);
+        void vector_add(std::vector<float>,
+                        std::vector<float>,
+                        std::vector<float>&);
+        void vector_sub(std::vector<float>,
+                        std::vector<float>,
+                        std::vector<float>&);
+
+        void matrix_add(std::vector<std::vector<float>>,
+                        std::vector<std::vector<float>>,
+                        std::vector<std::vector<float>>&);
+        void matrix_add(float,
+                        std::vector<std::vector<float>>,
+                        float,
+                        std::vector<std::vector<float>>,
+                        std::vector<std::vector<float>>&);
+        void matrix_sub(std::vector<std::vector<float>>,
+                        std::vector<std::vector<float>>,
+                        std::vector<std::vector<float>>&);
 
 	inline float unit_random(){ return ((float)rand())/((float)RAND_MAX); };
 };
