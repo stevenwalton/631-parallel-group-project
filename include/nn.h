@@ -11,11 +11,11 @@ class LinearLayer
 {
     private:
         math_funcs math;
-        int num_inputs;
-        int num_neurons;
+        size_t num_inputs;
+        size_t num_neurons;
 	//not sure learning rate should be a layer attribute
         float learning_rate; 
-	int batch_size;
+	size_t batch_size;
         std::vector<struct node> neurons;
 
     public:

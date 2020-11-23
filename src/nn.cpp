@@ -19,11 +19,11 @@ void LinearLayer::initializeLayer()
     // TODO: Find faster random
     for (node& n : this->neurons)
     {
-	int j;
         n.activation.resize(this->batch_size);
         n.error.resize(this->batch_size);
 	n.delta.resize(this->batch_size);
-	for (j = 0; j < this->batch_size; j++){
+        #pragma omp parallel for schedule(static)
+	for (size_t j = 0; j < this->batch_size; ++j){
 		n.activation[j] = 0.0;
 		n.error[j] = 0.0;
 		n.delta[j] = 0.0;
@@ -32,8 +32,8 @@ void LinearLayer::initializeLayer()
         // Initialize then fill
         n.weight.resize(this->num_inputs);
         // No real speedup (unsurprising)
-        //#pragma omp parallel for
-        for (j = 0; j < this->num_inputs; ++j)
+        #pragma omp parallel for
+        for (size_t j = 0; j < this->num_inputs; ++j)
             n.weight[j] = math.unit_random();
     }
 }
@@ -79,9 +79,8 @@ void LinearLayer::forward(std::vector<std::vector<float>> batch_inputs)
     //std::cout << this->num_inputs << std::endl; 
     
     assert(batch_inputs[0].size() == this->num_inputs);
-    size_t i, j;
     //iterating over all training instances in the batch
-    for (i = 0; i < batch_inputs.size(); i++){
+    for (size_t i = 0; i < batch_inputs.size(); i++){
     	for (node& n : this->neurons)
     	{	
         	//j = 0;
@@ -168,14 +167,14 @@ void LinearLayer::updateWeights(std::vector<std::vector<float>> inputs)
 void LinearLayer::updateWeightsLegacy(std::vector<std::vector<float>> inputs)
 {
 
-    float delta_sum, input_delta_sum;
-    size_t j, i;
+    //float delta_sum, input_delta_sum;
+    //size_t j, i;
     for (node& n : this->neurons)
     {
-	for(j = 0; j < inputs.size(); j++)
+	for(size_t j = 0; j < inputs.size(); ++j)
         {
         	n.bias += n.delta[j] * this->learning_rate;
-		for (i = 0; i < n.weight.size(); i++)
+		for (size_t i = 0; i < n.weight.size(); ++i)
         	{
 			//std::cout << inputs[j][i] << " * " << n.delta[j] << " * " << this->learning_rate << "\n";
 			n.weight[i] += inputs[j][i] * n.delta[j] * this->learning_rate;
