@@ -7,7 +7,7 @@ float math_funcs::dot_product(std::vector<float> x, std::vector<float> y)
 {
     assert(x.size() == y.size() || !(fprintf(stderr, "Dot products are not the same size: %lu vs %lu\n", x.size(), y.size())));
     float product = 0;
-    #pragma omp parallel for schedule(static)
+    #pragma omp parallel for schedule(static) reduction(+:product)
     for (size_t i = 0; i < x.size(); ++i)
         product += x[i] * y[i];
     return product;
@@ -18,7 +18,7 @@ float math_funcs::dot_product(float a, std::vector<float> x, float b, std::vecto
 {
     assert(x.size() == y.size() || !(fprintf(stderr, "Dot products are not the same size: %lu vs %lu\n", x.size(), y.size())));
     float product = 0;
-    #pragma omp parallel for schedule(static)
+    #pragma omp parallel for schedule(static) reduction(+:product)
     for (size_t i = 0; i < x.size(); ++i)
         product += (a * x[i]) * (b * y[i]);
     return product;
