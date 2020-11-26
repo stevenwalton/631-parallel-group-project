@@ -32,21 +32,24 @@ int main(int argc, const char * argv[])
     string dataset;
     int n_epochs;
     float learning_rate;
+    int batch_size;
 
-    if (argc == 4){
+    if (argc == 5){
 	dataset = argv[1];
         learning_rate = stof(argv[2]);
         n_epochs = stoi(argv[3]);
+	batch_size = stoi(argv[4]);
     }else{
         cout << "Usage: \n\t./nn <dataset_file> <lr> <n_epochs>\n\n";
         cout << "Using default values: \n\n";
 	cout << "Dataset = moons_dataset.txt\n";
         cout << "Learning rate = 0.3\n";
-        cout << "Epochs = 500\n\n";
+        cout << "Epochs = 500\n";
+	cout << "Batch size = 1\n\n";
         dataset = "moons_dataset.txt";
     	learning_rate = 0.3f;
         n_epochs = 500;
-        //n_epochs = 5;
+        batch_size = 1;
     }
 
     //vectors to hold the data
@@ -57,7 +60,6 @@ int main(int argc, const char * argv[])
 
     /************* Define Model *********************/
     Sequential model;
-    int batch_size = 1;
     model.setBatchSize(batch_size);
     defineModel(model, learning_rate);
     cout << endl;
@@ -106,27 +108,11 @@ int main(int argc, const char * argv[])
 
         accuracy = (float)epochHits/(float)features.size();
 	cout << "Epoch " << n << " Accuracy: " << accuracy << "\n";
-    
-    	/*
-    	//epochLoss = 0.0;
-	epochHits = 0;
-	for (size_t i = 0; i < features.size(); i++)
-	{       
-		//model.trainIteration(features[i], labels[i]);
-                predictions = model.forward(features[i]);
-                //looking for hits
-                //this needed to be adapted for multiple outputs
-                if(round(predictions[0]) == labels[i][0])
-                        epochHits += 1;
+    	if(accuracy == 1)
+	{
+		cout << "Reached accuracy of 1. Stopping early" << endl;
+		break;
 	}
-        accuracy = (float)epochHits/(float)features.size();
-	cout << "Epoch " << n << " Accuracy: " << accuracy << "\n";
-        //if (accuracy == 1)
-        //{
-        //    cout << "Reached accuracy of 1. Stopping early" << endl;
-        //    break;
-        //}
-        */
     }
     return 0;
 }
