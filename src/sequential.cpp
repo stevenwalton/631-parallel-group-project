@@ -44,20 +44,25 @@ void Sequential::backward(std::vector<std::vector<float>> error, std::vector<std
 {
 	//std::cout << "errors dim = " << error.size() << " x " << error[0].size() << "\n";
 	//std::cout << "inputs dim = " << inputs.size() << " x " << inputs[0].size() << "\n";
-	//Creating the fake 'weights' vector of vectors for the 
-	//output layer
-	std::vector<std::vector<float>> current_weights;
-	//for(float f : error)
-        for (size_t i = error[0].size(); i != 0; --i) 
-	{
-		std::vector<float> w{1.0};
-		current_weights.emplace_back(w);
-	}
-	//computing deltas
-	std::vector<std::vector<float>> current_error(error.begin(), error.end());
+	//Finding the deltas for the output layer
+	int last_index = layers.size()-1;
+	std::vector<std::vector<float>> current_error = math.matrix_transpose(error);
+
+	//see the src/math_funcs.cpp file for an explanation of how this method works
+	//It's basically multiplying element by element in a transposed manner the derivative of the activations by the errors and saving in the deltas.
+	std::vector<std::vector<float>> temp_deltas = layers[last_index].getDeltas();
+	math.transposed_element_matrix_mult(layers[last_index].getActivations(), current_error, temp_deltas, math.derivative_sigmoid);
+	//doing this cause i was getting a compiling error
+	layers[last_index].setDeltas(temp_deltas);
+
+	//get the last layer's weights and deltas
+	std::vector<std::vector<float>> current_weights = layers[last_index].getWeights();
+	current_error = layers[last_index].getDeltas();
+
+	//computing deltas for all other layers
 	//careful with size_t as int leads to unexpected behaviour
 	//apparently can't go negative
-	for(int i = layers.size()-1; i >= 0; i--)
+	for(int i = last_index-1; i >= 0; i--)
 	{
 		//std::cout << "\nErrors: \n";
 		//for(std::vector<float> in : current_error)
@@ -71,18 +76,21 @@ void Sequential::backward(std::vector<std::vector<float>> error, std::vector<std
 
 	//updating the weights for all but the first (input) layer
 	
-	for(size_t i = layers.size()-1; i > 0; i--)
+	for(size_t i = last_index; i > 0; i--)
 	{
 		//std::cout << "\nlayer " << i << " weights before update\n";
 		//layers[i].printWeights();
+		
 		layers[i].updateWeightsLegacy(layers[i-1].getActivations());
+		//layers[i].updateWeights(layers[i-1].getActivations());
+		
 		//std::cout << "\nlayer " << i << " weights after update\n";
                 //layers[i].printWeights();
 
 	}
 	//updating the first layer
 	layers[0].updateWeightsLegacy(inputs);
-	
+	//layers[0].updateWeights(inputs);
 }
 
 void Sequential::trainIteration(std::vector<std::vector<float>> training_inputs, std::vector<std::vector<float>> labels)

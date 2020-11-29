@@ -10,6 +10,7 @@ class Sequential
 	private:
 		std::vector<LinearLayer> layers;
                 size_t batch_size;
+		math_funcs math;
 
 	public:
 		Sequential();

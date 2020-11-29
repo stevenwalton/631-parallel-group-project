@@ -7,25 +7,39 @@
 #include "types.h"
 #include "math_funcs.h"
 
+using namespace std;
+
 class LinearLayer
 {
     private:
         math_funcs math;
         int num_inputs;
-        int num_neurons;
-	//not sure learning rate should be a layer attribute
+        int num_outputs;
         float learning_rate; 
 	int batch_size;
-        std::vector<struct node> neurons;
-
+	
+	//now I'll store the weights as a matrix 
+	//the size will be <num_inputs, num_outputs>
+        vector<vector<float>> weights;
+	
+	//likewise the bias will be vectors, size <num_outputs>
+	vector<float> bias;
+	
+	//the activations, deltas, and errors will be matrices as well
+	//size <batch_size, n_outputs>
+	vector<vector<float>> activations;
+	vector<vector<float>> deltas;
+	vector<vector<float>> errors;
+	//basically got rid of the neuron struct
+	
     public:
         LinearLayer(int, int, float=0.3, int=32);
         void initializeLayer();
         // Main Components
-        void forward(std::vector<std::vector<float>>);
-	void computeDeltas(std::vector<std::vector<float>>, std::vector<std::vector<float>>);
-        void updateWeights(std::vector<std::vector<float>>);
-        void updateWeightsLegacy(std::vector<std::vector<float>>);
+        void forward(vector<vector<float>>);
+	void computeDeltas(vector<vector<float>>, vector<vector<float>>);
+        void updateWeights(vector<vector<float>>);
+        void updateWeightsLegacy(vector<vector<float>>);
 	void zeroGrad();
 	
         // Helper Classes
@@ -33,17 +47,22 @@ class LinearLayer
 	void printActivations();
 	void printWeights();
 	void printBias();
-        void printNodeWeights(struct node);
+        //void printNodeWeights(struct node);
         // Setters
 	void setLearningRate(float);
         // Getters 
-	std::vector<std::vector<float>> getActivations();
-	std::vector<std::vector<float>> getDeltas();
-	std::vector<std::vector<float>> getWeights();
-        inline std::vector<struct node> getNeurons() {return neurons;}
-	inline float getLearningRate(){return this->learning_rate;};
-	inline int getNumInputs(){return this->num_inputs;};
-	inline int getNumNeurons(){return this->num_neurons;};
+	vector<vector<float>> getActivations(){return this->activations;};
+	vector<vector<float>> getDeltas(){return this->deltas;};
+	vector<vector<float>> getWeights(){return this->weights;};
+	vector<float> getBias();
+	float getLearningRate(){return this->learning_rate;};
+	int getNumInputs(){return this->num_inputs;};
+	int getNumNeurons(){return this->num_outputs;};
+
+	// Setters
+	void setActivations(vector<vector<float>> act){this->activations = act;};
+	void setDeltas(vector<vector<float>> deltas){this->activations = deltas;};
+	void setErrors(vector<vector<float>> errors){this->activations = errors;};
 	
 };
 
