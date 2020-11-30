@@ -25,9 +25,12 @@ class LinearLayer
 	//likewise the bias will be vectors, size <num_outputs>
 	vector<float> bias;
 	
-	//the activations, deltas, and errors will be matrices as well
+	//the activations,
 	//size <batch_size, n_outputs>
 	vector<vector<float>> activations;
+	
+	//deltas, and errors will be matrices as well
+	//size <n_outputs, batch_size>
 	vector<vector<float>> deltas;
 	vector<vector<float>> errors;
 	//basically got rid of the neuron struct

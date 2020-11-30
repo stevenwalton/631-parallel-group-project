@@ -20,7 +20,7 @@ void defineModel(Sequential &model, float learning_rate)
     //Adding the layers to the model
     model.add(inputLayer);
     model.add(h1);
-    model.add(h2);
+    //model.add(h2);
     model.add(outputLayer);
 }
 
@@ -28,7 +28,7 @@ int main(int argc, const char * argv[])
 {
     //setting a random seed
     srand (time(0));
-    //srand(0);
+    //srand(1);
     string dataset;
     int n_epochs;
     float learning_rate;
