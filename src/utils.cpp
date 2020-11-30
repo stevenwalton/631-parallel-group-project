@@ -44,3 +44,9 @@ void printFloatVector(std::vector<float> v)
 		std::cout << f << " ";
 	std::cout << "\n";
 }
+
+void printFloatMatrix(std::vector<std::vector<float>> m)
+{
+	for(std::vector<float> v : m)
+		printFloatVector(v);
+}

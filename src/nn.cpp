@@ -1,6 +1,7 @@
 #include <iostream>
 #include "nn.h"
 #include "types.h"
+#include "utils.h"
 #include "math_funcs.h"
 #include <cassert>
 
@@ -87,9 +88,22 @@ void LinearLayer::forward(std::vector<std::vector<float>> batch_inputs)
     //this can probably be done more efficiently by combining function behaviors
     //specially for CUDA where if we keep it as 3 distinct operations we would
     //need to allocate memory 3 times for pretty much the same data
-    math.matrix_mult(batch_inputs, this->weights, this->activations);
-    math.matrix_plus_vec(this->activations, this->bias);
-    math.map_function(this->activations, math.sigmoid);
+	
+	//this->printActivations();
+	math.matrix_mult(batch_inputs, this->weights, this->activations);
+   
+	//this->printActivations();
+	//std::cout << "\n";
+
+	math.matrix_plus_vec(this->activations, this->bias);
+	
+	//this->printActivations();
+        //std::cout << "\n";
+	
+	math.map_function(this->activations, math.sigmoid);
+
+	//this->printActivations();
+        //std::cout << "\n";
 }
 
 /*First step of backprop
@@ -105,6 +119,10 @@ void LinearLayer::computeDeltas(std::vector<std::vector<float>> previous_errors,
 	//**************************
 	// 3 x 2        2 x 32         3 x 32
 	//weights * previous_errors -> errors
+	//std::cout << "Previous errors\n"; 
+	//printFloatMatrix(previous_errors);
+	//std::cout << "\n";
+
 	math.matrix_mult(weights, previous_errors, this->errors);
 	//3 x 32              32 x 3       3 x 32
 	//errors *tran_elem deriv(activation) -> deltas

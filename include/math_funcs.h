@@ -46,6 +46,9 @@ class math_funcs
 	void map_function(std::vector<std::vector<float>> &, 
 			  float func (float));
 	std::vector<std::vector<float>> matrix_transpose(std::vector<std::vector<float>>);
+	void elem_matrix_mult(std::vector<std::vector<float>>,
+                            std::vector<std::vector<float>>,
+                            std::vector<std::vector<float>>&);
 	void transposed_element_matrix_mult(std::vector<std::vector<float>>,
                             std::vector<std::vector<float>>,
                             std::vector<std::vector<float>>&,

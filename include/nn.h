@@ -61,8 +61,8 @@ class LinearLayer
 
 	// Setters
 	void setActivations(vector<vector<float>> act){this->activations = act;};
-	void setDeltas(vector<vector<float>> deltas){this->activations = deltas;};
-	void setErrors(vector<vector<float>> errors){this->activations = errors;};
+	void setDeltas(vector<vector<float>> deltas){this->deltas = deltas;};
+	void setErrors(vector<vector<float>> errors){this->errors = errors;};
 	
 };
 

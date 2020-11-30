@@ -27,8 +27,8 @@ void defineModel(Sequential &model, float learning_rate)
 int main(int argc, const char * argv[])
 {
     //setting a random seed
-    //srand (time(0));
-    srand(0);
+    srand (time(0));
+    //srand(0);
     string dataset;
     int n_epochs;
     float learning_rate;
