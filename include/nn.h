@@ -7,44 +7,65 @@
 #include "types.h"
 #include "math_funcs.h"
 
+using namespace std;
+
 class LinearLayer
 {
     private:
         math_funcs math;
-        size_t num_inputs;
-        size_t num_neurons;
-	//not sure learning rate should be a layer attribute
-	//however, I'm setting it to 3 as default just to check that its working
+        int num_inputs;
+        int num_outputs;
         float learning_rate; 
-
-        std::vector<struct node> neurons;
-        //std::vector<struct node> output_nodes;
-
+	int batch_size;
+	
+	//now I'll store the weights as a matrix 
+	//the size will be <num_inputs, num_outputs>
+        vector<vector<float>> weights;
+	
+	//likewise the bias will be vectors, size <num_outputs>
+	vector<float> bias;
+	
+	//the activations,
+	//size <batch_size, n_outputs>
+	vector<vector<float>> activations;
+	
+	//deltas, and errors will be matrices as well
+	//size <n_outputs, batch_size>
+	vector<vector<float>> deltas;
+	vector<vector<float>> errors;
+	//basically got rid of the neuron struct
+	
     public:
-        LinearLayer(int, int, float=0.3);
+        LinearLayer(int, int, float=0.3, int=32);
         void initializeLayer();
         // Main Components
-        void forward(std::vector<float>);
-	void computeDeltas(std::vector<float>, std::vector<std::vector<float>>);
-        void updateWeights(std::vector<float>);
-        void zeroGrad();
+        void forward(vector<vector<float>>);
+	void computeDeltas(vector<vector<float>>, vector<vector<float>>);
+        void updateWeights(vector<vector<float>>);
+        void updateWeightsLegacy(vector<vector<float>>);
+	void zeroGrad();
 	
         // Helper Classes
         // Printers
 	void printActivations();
 	void printWeights();
 	void printBias();
-        void printNodeWeights(struct node);
+        //void printNodeWeights(struct node);
         // Setters
 	void setLearningRate(float);
         // Getters 
-	std::vector<float> getActivations();
-	std::vector<float> getDeltas();
-	std::vector<std::vector<float>> getWeights();
-        inline std::vector<struct node> getNeurons() {return neurons;}
-	inline float getLearningRate(){return this->learning_rate;};
-	inline int getNumInputs(){return this->num_inputs;};
-	inline int getNumNeurons(){return this->num_neurons;};
+	vector<vector<float>> getActivations(){return this->activations;};
+	vector<vector<float>> getDeltas(){return this->deltas;};
+	vector<vector<float>> getWeights(){return this->weights;};
+	vector<float> getBias();
+	float getLearningRate(){return this->learning_rate;};
+	int getNumInputs(){return this->num_inputs;};
+	int getNumNeurons(){return this->num_outputs;};
+
+	// Setters
+	void setActivations(vector<vector<float>> act){this->activations = act;};
+	void setDeltas(vector<vector<float>> deltas){this->deltas = deltas;};
+	void setErrors(vector<vector<float>> errors){this->errors = errors;};
 	
 };
 

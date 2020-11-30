@@ -40,8 +40,13 @@ void readDataset(std::string filename, std::vector<std::vector<float>> &features
 
 void printFloatVector(std::vector<float> v)
 {
-	std::cout << "\n";
-	for (float f : v)
+	for(float f : v)
 		std::cout << f << " ";
 	std::cout << "\n";
+}
+
+void printFloatMatrix(std::vector<std::vector<float>> m)
+{
+	for(std::vector<float> v : m)
+		printFloatVector(v);
 }
