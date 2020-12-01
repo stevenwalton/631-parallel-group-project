@@ -18,13 +18,13 @@ void defineModel(Sequential &model, float learning_rate)
     //creating the layers
     LinearLayer inputLayer(2,3, learning_rate, model.getBatchSize());
     LinearLayer h1(3,3, learning_rate, model.getBatchSize());
-    LinearLayer h2(3,3, learning_rate, model.getBatchSize());
+    //LinearLayer h2(10,10, learning_rate, model.getBatchSize());
     LinearLayer outputLayer(3,1, learning_rate, model.getBatchSize());
 
     //Adding the layers to the model
     model.add(inputLayer);
     model.add(h1);
-    //model.add(h2);
+    model.add(h2);
     model.add(outputLayer);
 }
 

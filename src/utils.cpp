@@ -20,9 +20,9 @@ void readDataset(std::string filename, std::vector<std::vector<float>> &features
 		std::stringstream ss(line);
             	getline(ss, element, ',');
             	x = stof(element);
-            	getline(ss, element, ',');
-            	
+            	getline(ss, element, ',');	
 		y = stof(element);
+
 		std::vector<float> feature_instance{x, y};
 	    	features.emplace_back(feature_instance);
 
