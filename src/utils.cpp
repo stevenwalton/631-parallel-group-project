@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string>
 
-void readDataset(std::string filename, std::vector<std::vector<float>> &features, std::vector<std::vector<float>> &labels)
+void readDataset(std::string filename, std::vector<std::vector<float>> &features, std::vector<int> &labels)
 
 {
     //Reading the dataset
@@ -27,8 +27,8 @@ void readDataset(std::string filename, std::vector<std::vector<float>> &features
 	    	features.emplace_back(feature_instance);
 
             	getline(ss, element, ',');
-	    	std::vector<float> label_instance{stof(element)};
-	    	labels.emplace_back(label_instance);
+	    	//std::vector<float> label_instance{stof(element)};
+	    	labels.emplace_back(stoi(element));
 	}
         myfile.close();
     }

@@ -58,7 +58,7 @@ int main(int argc, const char * argv[])
 
     //vectors to hold the data
     vector<vector<float>> features;
-    vector<vector<float>> labels;
+    vector<int> labels;
 
     readDataset(dataset, features, labels);
 
@@ -86,7 +86,7 @@ int main(int argc, const char * argv[])
         for (int i = 0; i < batch_loops; ++i)
         {
             vector<vector<float>> feature_vec(batch_size);
-            vector<vector<float>> label_vec(batch_size);
+            vector<int> label_vec(batch_size);
             for (int j = 0; j < batch_size; ++j)
             {
                 feature_vec[j] = features[(i*batch_size)+j];
@@ -96,7 +96,7 @@ int main(int argc, const char * argv[])
             batch_preds = model.forward(feature_vec);
             for (int j = 0; j < batch_size; ++j)
             {
-                if(round(batch_preds[j][0]) == label_vec[j][0])
+                if(round(batch_preds[j][0]) == label_vec[j])
                     epochHits += 1;
             }
         }

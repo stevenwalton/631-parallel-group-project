@@ -96,14 +96,14 @@ void Sequential::backward(std::vector<std::vector<float>> error, std::vector<std
 	layers[0].updateWeights(inputs);
 }
 
-void Sequential::trainIteration(std::vector<std::vector<float>> training_inputs, std::vector<std::vector<float>> labels)
+void Sequential::trainIteration(std::vector<std::vector<float>> training_inputs, std::vector<int> labels)
 {
 	std::vector<std::vector<float>> preds = this->forward(training_inputs);
 
 	this->backward(lossFunctionDerivative(preds, labels), training_inputs);
 }
 
-std::vector<std::vector<float>> Sequential::lossFunctionDerivative(std::vector<std::vector<float>> predictions, std::vector<std::vector<float>> labels)
+std::vector<std::vector<float>> Sequential::lossFunctionDerivative(std::vector<std::vector<float>> predictions, std::vector<int> labels)
 {
 
 	//std::cout << "predictions dim = " << predictions.size() << " x " << predictions[0].size() << "\n";
@@ -113,7 +113,7 @@ std::vector<std::vector<float>> Sequential::lossFunctionDerivative(std::vector<s
 	{
 		std::vector<float> error;
 		for (size_t j = 0; j < predictions[i].size(); j++)
-			error.emplace_back(predictions[i][j] - labels[i][j]);
+			error.emplace_back(predictions[i][j] - labels[i]);
 		errors.emplace_back(error);
 	}
 	//std::cout << "errors dim = " << errors.size() << " x " << errors[0].size() << "\n";

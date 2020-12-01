@@ -18,8 +18,8 @@ class Sequential
 		void backward(std::vector<std::vector<float>>, std::vector<std::vector<float>>);
 		inline void add(LinearLayer l){layers.emplace_back(l);};
 
-		void trainIteration(std::vector<std::vector<float>>, std::vector<std::vector<float>>);
-		std::vector<std::vector<float>> lossFunctionDerivative(std::vector<std::vector<float>>, std::vector<std::vector<float>>);
+		void trainIteration(std::vector<std::vector<float>>, std::vector<int>);
+		std::vector<std::vector<float>> lossFunctionDerivative(std::vector<std::vector<float>>, std::vector<int>);
                 inline void setBatchSize(size_t bs){this->batch_size = bs;};
                 // Helpers
 		void printModel();
