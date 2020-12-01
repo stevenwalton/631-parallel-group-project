@@ -38,6 +38,11 @@ float math_funcs::vector_sum(std::vector<float> v)
     return sum;
 }
 
+float math_funcs::vector_mean(std::vector<float> v)
+{
+	return vector_sum(v)/v.size();
+}
+
 void math_funcs::scale_vector(float a, std::vector<float> &v)
 {
     #pragma omp parallel for schedule(static)

@@ -19,7 +19,10 @@ class math_funcs
         static float derivative_sigmoid(float x){return x * (1. - x);}
         float dot_product(std::vector<float>, std::vector<float>);
         float dot_product(float, std::vector<float>, float, std::vector<float>);
-        float vector_sum(std::vector<float>);
+        
+	float vector_sum(std::vector<float>);
+	float vector_mean(std::vector<float>);
+
         void scale_vector(float, std::vector<float>&);
         void vector_add(std::vector<float>,
                         std::vector<float>,
