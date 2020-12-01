@@ -16,15 +16,21 @@ double crossEntropyLoss(double y, double y_hat){
 void defineModel(Sequential &model, float learning_rate)
 {
     //creating the layers
-    LinearLayer inputLayer(2,3, learning_rate, model.getBatchSize());
-    LinearLayer h1(3,3, learning_rate, model.getBatchSize());
-    LinearLayer h2(3,3, learning_rate, model.getBatchSize());
-    LinearLayer outputLayer(3,1, learning_rate, model.getBatchSize());
+    LinearLayer inputLayer(2,100, learning_rate, model.getBatchSize());
+    LinearLayer h1(100,100, learning_rate, model.getBatchSize());
+    LinearLayer h2(100,100, learning_rate, model.getBatchSize());
+    LinearLayer h3(100,100, learning_rate, model.getBatchSize());
+    LinearLayer h4(100,100, learning_rate, model.getBatchSize());
+    LinearLayer h5(100,100, learning_rate, model.getBatchSize());
+    LinearLayer outputLayer(100,1, learning_rate, model.getBatchSize());
 
     //Adding the layers to the model
     model.add(inputLayer);
     model.add(h1);
-    //model.add(h2);
+    model.add(h2);
+    model.add(h3);
+    model.add(h4);
+    model.add(h5);
     model.add(outputLayer);
 }
 
@@ -52,8 +58,8 @@ int main(int argc, const char * argv[])
 	cout << "Batch size = 1\n\n";
         dataset = "moons_dataset.txt";
     	learning_rate = 0.3f;
-        n_epochs = 500;
-        batch_size = 1;
+        n_epochs = 10;
+        batch_size = 32;
     }
 
     //vectors to hold the data

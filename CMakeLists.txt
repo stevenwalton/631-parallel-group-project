@@ -6,20 +6,25 @@ project(main)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Includes
-include_directories(include)
-file(GLOB Sources "src/*.cpp")
-
 # options
 option(OMP OFF)
 option(CUDA OFF)
 option(DEBUG OFF)
 
+# Includes
+include_directories(include)
+file(GLOB Sources "src/*.cpp")
+
+
 if(DEBUG)
     message("Debugging Turned On")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall")
+elseif (PROFILE)
+    message("Profileing code")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -pg")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O2")
+    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O2")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 endif()
 if(OMP)
     message("Building with OpenMP")
