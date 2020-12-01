@@ -76,7 +76,7 @@ int main(int argc, const char * argv[])
     vector<float> predictions;
     vector<vector<float> > batch_preds;
     int batch_loops = features.size() / batch_size;
-    featuresAndLabelsToGPU(features, labels);
+    //featuresAndLabelsToGPU(features, labels);
     
     /************* Training  *********************/
 
