@@ -153,14 +153,20 @@ void LinearLayer::updateWeights(std::vector<std::vector<float>> inputs)
         }
 
 	//creating a matrix to hold the weight updates
-	vector<vector<float>> weight_updates;
-	for (int i = 0; i < this->num_inputs; i++)
-		weight_updates.push_back(vector<float>(this->num_outputs, 0.0));
+	vector<vector<float>> weight_updates(this->num_inputs, vector<float>(this->num_outputs, 0.0));
+	vector<vector<float>> l2_updates(this->weights);
+
+	//for (int i = 0; i < this->num_inputs; i++)
+	//	weight_updates.push_back(vector<float>(this->num_outputs, 0.0));
 
 	math.matrix_mult(math.matrix_transpose(inputs), math.matrix_transpose(this->deltas), weight_updates);
 	//using the matrix_add method to basically do
 	//weights[i][j] = 1.0 * weights[i][j] + lr * weight_updates[i][j]
+
 	math.matrix_add(1.0, this->weights, -1.0 * this->learning_rate, weight_updates, this->weights);
+
+	//l2 reg
+	
 
 }
 

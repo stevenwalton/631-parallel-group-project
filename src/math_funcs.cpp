@@ -211,3 +211,8 @@ void math_funcs::transposed_element_matrix_mult(std::vector<std::vector<float>> 
                 }
         }
 }
+
+void math_funcs::l2_reg(float w, float lr, float labmda, int bs)
+{
+	return (w * lr * lambda) / bs;
+}
