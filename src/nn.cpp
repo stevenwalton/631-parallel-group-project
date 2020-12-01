@@ -149,7 +149,7 @@ void LinearLayer::updateWeights(std::vector<std::vector<float>> inputs)
 	//updating the bias
         for (int i = 0; i < this->bias.size(); i++)
         {
-                this->bias[i] += math.vector_sum(this->deltas[i]) * this->learning_rate;
+                this->bias[i] -= math.vector_sum(this->deltas[i]) * this->learning_rate;
         }
 
 	//creating a matrix to hold the weight updates
@@ -160,7 +160,7 @@ void LinearLayer::updateWeights(std::vector<std::vector<float>> inputs)
 	math.matrix_mult(math.matrix_transpose(inputs), math.matrix_transpose(this->deltas), weight_updates);
 	//using the matrix_add method to basically do
 	//weights[i][j] = 1.0 * weights[i][j] + lr * weight_updates[i][j]
-	math.matrix_add(1.0, this->weights, this->learning_rate, weight_updates, this->weights);
+	math.matrix_add(1.0, this->weights, -1.0 * this->learning_rate, weight_updates, this->weights);
 
 }
 

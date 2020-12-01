@@ -113,7 +113,7 @@ std::vector<std::vector<float>> Sequential::lossFunctionDerivative(std::vector<s
 	{
 		std::vector<float> error;
 		for (size_t j = 0; j < predictions[i].size(); j++)
-			error.emplace_back(labels[i][j] - predictions[i][j]);
+			error.emplace_back(predictions[i][j] - labels[i][j]);
 		errors.emplace_back(error);
 	}
 	//std::cout << "errors dim = " << errors.size() << " x " << errors[0].size() << "\n";
