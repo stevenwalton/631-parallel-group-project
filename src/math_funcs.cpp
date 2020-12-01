@@ -50,6 +50,41 @@ void math_funcs::scale_vector(float a, std::vector<float> &v)
         v[i] *= a;
 }
 
+void math_funcs::scale_matrix(std::vector<float> a, std::vector<std::vector<float>> &m)
+{
+        assert(a.size() == m.size());
+        for(size_t i = 0; i < m.size(); ++i)
+        {
+                scale_vector(a[i], m[i]);
+        }
+}
+
+void math_funcs::scale_matrix(float a, std::vector<std::vector<float>> &m)
+{
+        for(size_t i = 0; i < m.size(); ++i)
+        {
+                scale_vector(a, m[i]);
+        }
+}
+
+//this method is similar to the last one but scales by 1/a 
+void math_funcs::inverse_scale_matrix(std::vector<float> a, std::vector<std::vector<float>> &m)
+{
+        assert(a.size() == m.size());
+        for(size_t i = 0; i < m.size(); ++i)
+        {
+                scale_vector(1.0/a[i], m[i]);
+        }
+}
+
+void math_funcs::inverse_scale_matrix(float a, std::vector<std::vector<float>> &m)
+{
+        for(size_t i = 0; i < m.size(); ++i)
+        {
+                scale_vector(1.0/a, m[i]);
+        }
+}
+
 void math_funcs::vector_add(std::vector<float> x, 
                             std::vector<float> y,
                             std::vector<float>& z)
@@ -210,9 +245,4 @@ void math_funcs::transposed_element_matrix_mult(std::vector<std::vector<float>> 
                         z[j][i] = func(x[i][j]) * y[j][i];
                 }
         }
-}
-
-void math_funcs::l2_reg(float w, float lr, float labmda, int bs)
-{
-	return (w * lr * lambda) / bs;
 }

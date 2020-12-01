@@ -22,9 +22,13 @@ class math_funcs
         
 	float vector_sum(std::vector<float>);
 	float vector_mean(std::vector<float>);
-
+	void scale_matrix(std::vector<float>, std::vector<std::vector<float>> &);
+	void scale_matrix(float, std::vector<std::vector<float>> &);
+	void inverse_scale_matrix(std::vector<float>, std::vector<std::vector<float>> &);
+	void inverse_scale_matrix(float, std::vector<std::vector<float>> &);
         void scale_vector(float, std::vector<float>&);
-        void vector_add(std::vector<float>,
+        
+	void vector_add(std::vector<float>,
                         std::vector<float>,
                         std::vector<float>&);
         void vector_sub(std::vector<float>,

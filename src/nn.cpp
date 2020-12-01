@@ -166,8 +166,9 @@ void LinearLayer::updateWeights(std::vector<std::vector<float>> inputs)
 	math.matrix_add(1.0, this->weights, -1.0 * this->learning_rate, weight_updates, this->weights);
 
 	//l2 reg
-	
-
+	float lambda = 0.001;
+	math.scale_matrix(-1.0 * this->learning_rate * lambda / inputs.size(), l2_updates);
+	math.matrix_add(this->weights, l2_updates, this->weights);	
 }
 
 void LinearLayer::updateWeightsLegacy(std::vector<std::vector<float>> inputs)
