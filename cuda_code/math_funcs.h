@@ -17,11 +17,20 @@ class math_funcs
     public:
         static float sigmoid(float x){return std::exp(x)/ (std::exp(x) + 1.);}
         static float derivative_sigmoid(float x){return x * (1. - x);}
-        float dot_product(std::vector<float>, std::vector<float>);
-        float dot_product(float, std::vector<float>, float, std::vector<float>);
-        float vector_sum(std::vector<float>);
+        //float dot_product(std::vector<float>, std::vector<float>);
+        //float dot_product(float, std::vector<float>, float, std::vector<float>);
+        
+	inline float vector_mean(std::vector<float> v) {return vector_sum(v)/v.size();};
+	inline float unit_random(){ return ((float)rand())/((float)RAND_MAX); };
+
+	float vector_sum(std::vector<float>);
+	void scale_matrix(std::vector<float>, std::vector<std::vector<float>> &);
+	void scale_matrix(float, std::vector<std::vector<float>> &);
+	void inverse_scale_matrix(std::vector<float>, std::vector<std::vector<float>> &);
+	void inverse_scale_matrix(float, std::vector<std::vector<float>> &);
         void scale_vector(float, std::vector<float>&);
-        void vector_add(std::vector<float>,
+        
+	void vector_add(std::vector<float>,
                         std::vector<float>,
                         std::vector<float>&);
         void vector_sub(std::vector<float>,
@@ -45,18 +54,17 @@ class math_funcs
 	void matrix_plus_vec(std::vector<std::vector<float>>&, std::vector<float>);
 	void map_function(std::vector<std::vector<float>> &, 
 			  float func (float));
-	std::vector<std::vector<float>> matrix_transpose(std::vector<std::vector<float>>);
 	void elem_matrix_mult(std::vector<std::vector<float>>,
-                            std::vector<std::vector<float>>,
-                            std::vector<std::vector<float>>&);
+                              std::vector<std::vector<float>>,
+                              std::vector<std::vector<float>>&);
 	void transposed_element_matrix_mult(std::vector<std::vector<float>>,
-                            std::vector<std::vector<float>>,
-                            std::vector<std::vector<float>>&,
-                            float func(float));
+                                            std::vector<std::vector<float>>,
+                                            std::vector<std::vector<float>>&,
+                                            float func(float));
 	void transposed_element_matrix_mult(std::vector<std::vector<float>>,
-                            std::vector<std::vector<float>>,
-                            std::vector<std::vector<float>>&);
-	inline float unit_random(){ return ((float)rand())/((float)RAND_MAX); };
+                                            std::vector<std::vector<float>>,
+                                            std::vector<std::vector<float>>&);
+	std::vector<std::vector<float>> matrix_transpose(std::vector<std::vector<float>>);
 };
 
 
