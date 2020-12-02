@@ -27,14 +27,10 @@ void cudaMatrixMultiply(std::vector<std::vector<float>>,
                         std::vector<std::vector<float>>,
                         std::vector<std::vector<float>>&);
 
-void matrixToCuda(std::vector<std::vector<float>>&,
-                  std::vector<std::vector<float>>&,
-                  float**,
-                  float**,
-                  float**);
-
-void cudaToMatrix(float**,
-                  std::vector<std::vector<float>>&);
+template <class T>
+void cuda2Matrix(T* dev_z,std::vector<std::vector<T>>& z);
+template <class T>
+void cuda2Vector(T** dev_z, std::vector<T>& z);
 //void modelToGPU(Sequential&);
 
 

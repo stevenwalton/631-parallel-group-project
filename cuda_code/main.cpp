@@ -90,9 +90,11 @@ int main(int argc, const char * argv[])
     float accuracy; 
     for (int n = 0; n < n_epochs; n++)
     {
+	//cout << "Epoch " << n << endl;
         epochHits = 0;
         for (int i = 0; i < batch_loops; ++i)
         {
+	    //cout << "Batch " << i+1 << "/" << batch_loops << endl;
             vector<vector<float>> feature_vec(batch_size);
             vector<int> label_vec(batch_size);
             for (int j = 0; j < batch_size; ++j)

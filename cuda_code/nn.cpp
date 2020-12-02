@@ -74,8 +74,8 @@ void LinearLayer::forward(std::vector<std::vector<float>> batch_inputs)
     //math.matrix_mult(batch_inputs, this->weights, this->activations);
     cudaMatrixMultiply(batch_inputs, this->weights, this->activations);
     //matrixToCuda(this->weights, this->activations, &dev_x, &dev_y, &dev_z);
-    printf("ABORTING ON PURPOSE!!!!\n");
-    abort();
+    //printf("ABORTING ON PURPOSE!!!!\n");
+    //abort();
 
     math.matrix_plus_vec(this->activations, this->bias);
     math.map_function(this->activations, math.sigmoid);

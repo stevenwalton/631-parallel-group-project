@@ -52,14 +52,13 @@ void CopyData(
 
   // copy data
   checkCudaErrors(cudaMalloc((void**) d_in, N * dsize));
-  checkCudaErrors(cudaEventRecord(start, 0));
+  //checkCudaErrors(cudaEventRecord(start, 0));
   checkCudaErrors(cudaMemcpy(*d_in, h_in_pinned,
                              N * dsize, cudaMemcpyHostToDevice));
-  checkCudaErrors(cudaEventRecord(stop, 0));
-  checkCudaErrors(cudaEventSynchronize(stop));
-  checkCudaErrors(cudaEventElapsedTime(&elapsedTime, start, stop));
-  printf("  Pinned Device to Host bandwidth (GB/s): %f\n",
-         (N * dsize) * 1e-6 / elapsedTime);
+  //checkCudaErrors(cudaEventRecord(stop, 0));
+  //checkCudaErrors(cudaEventSynchronize(stop));
+  //checkCudaErrors(cudaEventElapsedTime(&elapsedTime, start, stop));
+  //printf("  Pinned Device to Host bandwidth (GB/s): %f\n",(N * dsize) * 1e-6 / elapsedTime);
 
   cudaEventDestroy(start);
   cudaEventDestroy(stop);
@@ -108,11 +107,43 @@ void vector2Cuda(std::vector<T>& v, T** dev_v)
         CopyData(arr, v_total, sizeof(T), dev_v);
 }
 
-void cudaToMatrix(float** dev_z,
-                  std::vector<std::vector<float>>& z)
+template <class T>
+void cuda2Matrix(T* dev_z, std::vector<std::vector<T>>& z)
 {
-    	//TODO
+    	size_t z_rows = z.size();
+	size_t z_cols = z[0].size();
+	size_t z_total = z_rows * z_cols;
+	//creating an array to hold the data 
+	T* arr = (T*)malloc(z_total * sizeof(T));
+
+	//copying from GPU to CPU
+    	checkCudaErrors(cudaMemcpy(arr, dev_z, sizeof(T) * z_total, cudaMemcpyDeviceToHost));
 	
+	//copying data into vector
+	for (size_t i = 0; i < z_rows; ++i)
+                for (size_t j = 0; j < z_cols; ++j)
+                        z[i][j] = arr[i*z_cols + j];
+
+	//freeing memory
+	free(arr);
+}
+
+template <class T>
+void cuda2Vector(T** dev_z, std::vector<T>& z)
+{
+        size_t z_total = z.size();
+        //creating an array to hold the data
+        T* arr = (T*)malloc(z_total * sizeof(T));
+
+        //copying from GPU to CPU
+        checkCudaErrors(cudaMemcpy(arr, dev_z, sizeof(T) * z_total, cudaMemcpyDeviceToHost));
+
+        //copying data into vector
+        for (size_t i = 0; i < z_total; ++i)
+                        z[i] = arr[i];
+
+        //freeing memory
+        free(arr);
 }
 
 void cudaMatrixMultiply(std::vector<std::vector<float>> x,
@@ -132,8 +163,8 @@ void cudaMatrixMultiply(std::vector<std::vector<float>> x,
     size_t shared = threads*sizeof(float);
     cuda_matrix_mult<<<dimGrid, dimBlock, shared>>>(x[0].size(), y.size(), dev_x, dev_y, dev_z);
     //TODO
-    cudaToMatrix(&dev_z, z);
-    printf("We made it out\n");
+    cuda2Matrix(dev_z, z);
+    //printf("We made it out\n");
 }
 
 
