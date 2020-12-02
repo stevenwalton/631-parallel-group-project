@@ -71,9 +71,16 @@ void LinearLayer::forward(std::vector<std::vector<float>> batch_inputs)
      	* This is generally the largest matrix and gets the best benefit from
      	* speedups.
      	*/
-    	//math.matrix_mult(batch_inputs, this->weights, this->activations);
-    	cudaMatrixMultiply(batch_inputs, this->weights, this->activations);
-    	//matrixToCuda(this->weights, this->activations, &dev_x, &dev_y, &dev_z);
+
+    	math.matrix_mult(batch_inputs, this->weights, this->activations);
+	std::cout << "\nRegular activations\n";
+	printFloatMatrix(this->activations);
+
+	cudaMatrixMultiply(batch_inputs, this->weights, this->activations);
+        std::cout << "\n with cuda activations\n";
+        printFloatMatrix(this->activations);
+
+	//matrixToCuda(this->weights, this->activations, &dev_x, &dev_y, &dev_z);
     	//printf("ABORTING ON PURPOSE!!!!\n");
     	//abort();
 
