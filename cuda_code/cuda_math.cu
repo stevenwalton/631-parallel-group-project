@@ -1,3 +1,4 @@
+#include <iostream>
 #include <cstdio>
 #include <vector>
 #include <cassert>
@@ -9,7 +10,42 @@
 #include "cuda_math.h"
 
 // Kernels go up top
+//Luis version
+//Basically launching one block for each element in the 
+//result matrix
 template <class T>
+__global__ void
+cuda_matrix_mult(size_t inner_size, size_t y_cols,
+                 T* x, T* y, T* z)
+{
+    	extern __shared__ double shared_mem[];
+    	int row = blockIdx.x;
+    	int col = blockIdx.y;
+    	int n_threads = blockDim.x;
+    	int tid = threadIdx.x;
+
+	size_t i;
+    	//clear the shared memory
+    	shared_mem[tid] = 0.0;
+    	__syncthreads();
+
+	//printf("\nrow = %d col = %d\n", row, col);
+
+	for (i = 0 + tid; i < inner_size; i+=n_threads)
+	{
+		shared_mem[tid] += x[row * inner_size + i] * y[i * y_cols + col];
+	}
+	__syncthreads();
+
+	if(tid == 0){
+		z[row*inner_size + col] = 0.0;
+		for (i = 0; i < n_threads; i++)
+			z[row*inner_size + col] += shared_mem[i];
+	}
+}
+
+/*Steven's version
+   template <class T>
 __global__ void
 cuda_matrix_mult(size_t x_size, size_t y_size,
                  T* x, T* y, T* z)
@@ -18,15 +54,17 @@ cuda_matrix_mult(size_t x_size, size_t y_size,
     int col = blockDim.y * blockIdx.y + threadIdx.y;
     if ( row < x_size && col < y_size)
     {
+        printf("\nrow = %d col = %d\n", row, col);
         T tmp = 0;
         for (size_t k = 0; k < y_size; ++k)
+        {
             tmp += x[row*y_size+ k] * y[k*y_size + col];
+            printf("%f * %f\n", x[row*y_size+ k], y[k*y_size + col]);
+        }
         z[row*y_size+ col] = tmp;
     }
 }
-
-
-
+*/
 /*
     CopyData function taken from Jee Choi's Homework assignment
  */
@@ -42,7 +80,6 @@ void CopyData(
   cudaEvent_t stop;
   cudaEventCreate(&start);
   cudaEventCreate(&stop);
-  float elapsedTime;
 
   // Allocate pinned memory on host (for faster HtoD copy)
   T* h_in_pinned = NULL;
@@ -121,9 +158,14 @@ void cuda2Matrix(T* dev_z, std::vector<std::vector<T>>& z)
 	
 	//copying data into vector
 	for (size_t i = 0; i < z_rows; ++i)
+	{
                 for (size_t j = 0; j < z_cols; ++j)
+		{
                         z[i][j] = arr[i*z_cols + j];
-
+			//std::cout << z[i][j] << " ";
+		}
+		//std::cout << std::endl;
+	}
 	//freeing memory
 	free(arr);
 }
@@ -140,8 +182,11 @@ void cuda2Vector(T** dev_z, std::vector<T>& z)
 
         //copying data into vector
         for (size_t i = 0; i < z_total; ++i)
+	{
                         z[i] = arr[i];
-
+			std::cout << arr[i];
+	}
+	std::cout << "\n";
         //freeing memory
         free(arr);
 }
@@ -157,11 +202,15 @@ void cudaMatrixMultiply(std::vector<std::vector<float>> x,
     matrix2Cuda(y, &dev_y);
     matrix2Cuda(z, &dev_z);
     //cuda_matrix_mult<<<x[0].size(), y.size()>>>(x[0].size(), y.size(), dev_x, dev_y, dev_z);
-    size_t threads=64;
-    dim3 dimGrid(x[0].size(), x.size(), 1);
-    dim3 dimBlock(threads, threads, 1);
-    size_t shared = threads*sizeof(float);
-    cuda_matrix_mult<<<dimGrid, dimBlock, shared>>>(x[0].size(), y.size(), dev_x, dev_y, dev_z);
+    size_t threads=32;
+    
+    //One block for each element in the result matrix
+    dim3 dimGrid(x.size(), y[0].size(), 1);
+    //Each block has 32 x 32 threads = 1024
+    dim3 dimBlock(threads, 1, 1);
+    //Using some shared memory, one float for each thread.
+    unsigned int shared = threads * sizeof(float);
+    cuda_matrix_mult<<<dimGrid, dimBlock, shared>>>(x[0].size(), y[0].size(), dev_x, dev_y, dev_z);
     //TODO
     cuda2Matrix(dev_z, z);
     //printf("We made it out\n");
