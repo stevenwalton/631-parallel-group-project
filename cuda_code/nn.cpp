@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "math_funcs.h"
 #include <cassert>
+#include "cuda_math.h"
 
 using namespace std;
 

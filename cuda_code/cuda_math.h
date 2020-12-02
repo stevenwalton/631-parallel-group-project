@@ -11,11 +11,17 @@ void CopyData(
   T** d_in);
 
 void featuresAndLabelsToGPU(std::vector<std::vector<float>>&,
-                            std::vector<std::vector<float>>&,
+                            std::vector<int>&,
                             size_t,
                             float**,
-                            float**,
+                            int**,
                             float**);
+
+template <class T>
+void matrix2Cuda(std::vector<std::vector<T>>& m, T** dev_m);
+
+template <class T>
+void vector2Cuda(std::vector<T>& v, T** dev_v);
 
 void cudaMatrixMultiply(std::vector<std::vector<float>>,
                         std::vector<std::vector<float>>,

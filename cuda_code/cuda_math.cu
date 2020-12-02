@@ -66,33 +66,15 @@ void CopyData(
 }
 
 void featuresAndLabelsToGPU(std::vector<std::vector<float>>& features,
-                            std::vector<std::vector<float>>& labels,
+                            std::vector<int>& labels,
                             size_t batch_size,
                             float** dev_features,
-                            float** dev_labels,
+                            int** dev_labels,
                             float** dev_predictions)
 {
     // Flatten vector of vectors and push to arrays
-    size_t f_size = features.size();
-    size_t f0_size = features[0].size();
-    size_t feat_size = f_size * f0_size;
-    float* feat_arr = (float*)malloc(feat_size * sizeof(float));
-    for (size_t i = 0; i < f_size; ++i)
-        for (size_t j = 0; j < f0_size; ++j)
-            feat_arr[i*f0_size + j] = features[i][j];
-    assert(feat_arr);
-
-    size_t l_size = labels.size();
-    size_t l0_size = labels[0].size();
-    size_t label_size = l_size * l0_size;
-    float* label_arr = (float*)malloc(label_size * sizeof(float));
-    for (size_t i = 0; i < l_size; ++i)
-        for(size_t j = 0; j < l0_size; ++j)
-            label_arr[i*l0_size + j] = labels[i][j];
-    assert(label_arr);
-
-    CopyData(feat_arr, feat_size, sizeof(float), dev_features);
-    CopyData(label_arr, label_size, sizeof(float), dev_labels);
+    matrix2Cuda(features, dev_features);
+    vector2Cuda(labels, dev_labels);
 
     // TODO
     // Check that preds is the correct shape and size
@@ -101,39 +83,36 @@ void featuresAndLabelsToGPU(std::vector<std::vector<float>>& features,
     CopyData(preds, batch_size, sizeof(float), dev_predictions);
 }
 
-void matrixToCuda(std::vector<std::vector<float>>& x,
-                  std::vector<std::vector<float>>& y,
-                  float** dev_x,
-                  float** dev_y, 
-                  float** dev_z)
+template <class T>
+void matrix2Cuda(std::vector<std::vector<T>>& m, T** dev_m)
 {
-    size_t x_size = x.size();
-    size_t x0_size = x[0].size();
-    size_t xflat_size = x_size * x0_size;
-    float* x_arr = (float*) malloc(xflat_size * sizeof(float));
-    for (size_t i = 0; i < x_size; ++i)
-        for (size_t j = 0; j < x0_size; ++j)
-            x_arr[i*x0_size + j] = x[i][j];
+	size_t m_rows = m.size();
+	size_t m_cols = m[0].size();
+	size_t m_total = m_rows * m_cols;
+	T* arr = (T*)malloc(m_total * sizeof(T));
+	for (size_t i = 0; i < m_rows; ++i)
+        	for (size_t j = 0; j < m_cols; ++j)
+            		arr[i*m_cols + j] = m[i][j];
+    	assert(arr);
+	CopyData(arr, m_total, sizeof(T), dev_m);
+}
 
-    size_t y_size = y.size();
-    size_t y0_size = y[0].size();
-    size_t yflat_size = y_size * y0_size;
-    float* y_arr = (float*) malloc(yflat_size * sizeof(float));
-    for (size_t i = 0; i < y_size; ++i)
-        for (size_t j = 0; j < y0_size; ++j)
-            y_arr[i*y0_size + j] = y[i][j];
-    CopyData(x_arr, xflat_size, sizeof(float), dev_x);
-    CopyData(y_arr, yflat_size, sizeof(float), dev_y);
-    size_t z_size = x_size * y0_size;
-    float* z = (float*)malloc(z_size * sizeof(float));
-    memset(z, 0, sizeof(float) * z_size);
-    CopyData(z, z_size, sizeof(float), dev_z);
+template <class T>
+void vector2Cuda(std::vector<T>& v, T** dev_v)
+{
+        size_t v_total = v.size();
+        T* arr = (T*)malloc(v_total * sizeof(T));
+        for (size_t i = 0; i < v_total; ++i)
+                        arr[i] = v[i];
+        assert(arr);
+        CopyData(arr, v_total, sizeof(T), dev_v);
 }
 
 void cudaToMatrix(float** dev_z,
                   std::vector<std::vector<float>>& z)
 {
-    //TODO
+    	//TODO
+	
 }
 
 void cudaMatrixMultiply(std::vector<std::vector<float>> x,
@@ -143,7 +122,9 @@ void cudaMatrixMultiply(std::vector<std::vector<float>> x,
     float* dev_x;
     float* dev_y;
     float* dev_z;
-    matrixToCuda(x, y, &dev_x, &dev_y, &dev_z);
+    matrix2Cuda(x, &dev_x);
+    matrix2Cuda(y, &dev_y);
+    matrix2Cuda(z, &dev_z);
     //cuda_matrix_mult<<<x[0].size(), y.size()>>>(x[0].size(), y.size(), dev_x, dev_y, dev_z);
     size_t threads=64;
     dim3 dimGrid(x[0].size(), x.size(), 1);
