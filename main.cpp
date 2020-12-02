@@ -7,6 +7,8 @@
 #include "utils.h"
 #include <string>
 
+#include <chrono>
+
 using namespace std;
 
 double crossEntropyLoss(double y, double y_hat){
@@ -50,15 +52,17 @@ int main(int argc, const char * argv[])
         n_epochs = stoi(argv[3]);
 	batch_size = stoi(argv[4]);
     }else{
+        /*
         cout << "Usage: \n\t./nn <dataset_file> <lr> <n_epochs>\n\n";
         cout << "Using default values: \n\n";
 	cout << "Dataset = moons_dataset.txt\n";
         cout << "Learning rate = 0.3\n";
         cout << "Epochs = 500\n";
 	cout << "Batch size = 1\n\n";
+        */
         dataset = "moons_dataset.txt";
     	learning_rate = 0.3f;
-        n_epochs = 10;
+        n_epochs = 100;
         batch_size = 32;
     }
 
@@ -72,8 +76,8 @@ int main(int argc, const char * argv[])
     Sequential model;
     model.setBatchSize(batch_size);
     defineModel(model, learning_rate);
-    cout << endl;
-    model.printModel();
+    //cout << endl;
+    //model.printModel();
 
     //float epochLoss;
     int epochHits; 
@@ -83,9 +87,10 @@ int main(int argc, const char * argv[])
     
     /************* Training  *********************/
 
-    cout << "Starting training, using learning rate = " << model.getLayers()[0].getLearningRate() << "\n";
+    //cout << "Starting training, using learning rate = " << model.getLayers()[0].getLearningRate() << "\n";
     
-    float accuracy; 
+    //float accuracy; 
+    auto start = std::chrono::high_resolution_clock::now();
     for (int n = 0; n < n_epochs; n++)
     {
         epochHits = 0;
@@ -116,6 +121,7 @@ int main(int argc, const char * argv[])
         }
         */
 
+        /*
         accuracy = (float)epochHits/(float)features.size();
 	cout << "Epoch " << n << " Accuracy: " << accuracy << "\n";
     	if(accuracy == 1)
@@ -123,6 +129,10 @@ int main(int argc, const char * argv[])
 		cout << "Reached accuracy of 1. Stopping early" << endl;
 		break;
 	}
+        */
     }
+    auto end = std::chrono::high_resolution_clock::now();
+    auto total = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    cout << (double)total.count()/(double)1000 << endl;
     return 0;
 }
