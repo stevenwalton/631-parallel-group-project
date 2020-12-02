@@ -12,25 +12,47 @@
 
 \begin{frame}
     \frametitle{Gradient Descent}
+    \begin{itemize}
+        \item Once a prediction has been made, find out \textit{how wrong} its with a \textit{Loss function.} 
+        \item Binary Cross Entropy Loss:
+        \begin{itemize}
+            \item $L = y * log(\hat{y}) + (1 - y) * log(1 - \hat{y})$
+        \end{itemize}
+        \item Gradient descent step:
+        \begin{itemize}
+            \item $w = w - \gamma \frac{d}{d_w}L$
+            \item $\gamma$ - learning rate parameter
+        \end{itemize}
+        
+    \end{itemize}
+    
+\end{frame}
+
+\begin{frame}
+    \frametitle{Backward Pass: Back-propagating the error}
     \center\includegraphics[width=.8\textwidth]{Images/backprop.png}
     \begin{itemize}
-        \item $h_{1_{act}} = W_{h_1} * Inputs$
-        \item $h_{2_{act}} = W_{h_2} * h_{1_{act}}$
-        \item $h_{3_{act}} = W_{h_3} * h_{2_{act}}$
-        \item $\hat{y} = W_{O} * h_{3_{act}}$
-        \item How do we improve the predictions?
+        \item $O_{error} = dLoss$
+        \item $h_{3_{error}} = O_{error} \cdot (W_{O})^T$
+        \item $h_{2_{error}} = h_{3_{error}} \cdot (W_{h_3})^T$
+        \item $h_{1_{error}} = h_{2_{error}} \cdot (W_{h_2})^T$
     \end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Back-propagating the error}
+    \frametitle{Backward Pass: Updating the weights}
     \center\includegraphics[width=.8\textwidth]{Images/backprop.png}
     \begin{itemize}
-        \item $h_{1_{act}} = W_{h_1} * Inputs$
-        \item $h_{2_{act}} = W_{h_2} * h_{1_{act}}$
-        \item $h_{3_{act}} = W_{h_3} * h_{2_{act}}$
-        \item $\hat{y} = W_{O} * h_{3_{act}}$
-        \item How do we improve the predictions?
+        \item $W_{h_1} = W_{h_1} - \gamma ((Inputs)^T \cdot h_{1_{error}})$
+        \item $W_{h_2} = W_{h_2} - \gamma ((h_{1_{act}})^T \cdot h_{2_{error}})$
+        \item $W_{h_3} = W_{h_3} - \gamma ((h_{2_{act}})^T \cdot h_{3_{error}})$
+        \item $W_{O} = W_{O} - \gamma ((h_{3_{act}})^T \cdot O_{error}$ )
     \end{itemize}
 \end{frame}
 
+\begin{frame}
+    \frametitle{Stochastic GD vs (Mini) Batch GD}
+    \center\includegraphics[width=.55\textwidth]{Images/sgd.png}
+    \center\includegraphics[width=.55\textwidth]{Images/bgd.png}
+
+\end{frame}

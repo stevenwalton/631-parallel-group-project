@@ -44,10 +44,10 @@
     \frametitle{Making predictions: Forward pass}
     \center\includegraphics[width=.8\textwidth]{Images/forward_pass.png}
     \begin{itemize}
-        \item $h_{1_{act}} = W_{h_1} * Inputs$
-        \item $h_{2_{act}} = W_{h_2} * h_{1_{act}}$
-        \item $h_{3_{act}} = W_{h_3} * h_{2_{act}}$
-        \item $\hat{y} = W_{O} * h_{3_{act}}$
+        \item $h_{1_{act}} = Inputs \cdot W_{h_1}$
+        \item $h_{2_{act}} = h_{1_{act}} \cdot W_{h_2}$
+        \item $h_{3_{act}} = h_{2_{act}} \cdot W_{h_3}$
+        \item $\hat{y} = h_{3_{act}} \cdot W_{O}$
         \item How do we improve the predictions?
     \end{itemize}
 \end{frame}
