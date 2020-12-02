@@ -10,4 +10,45 @@
 \end{itemize}
 \end{frame}
 
+\begin{frame}
+    \frametitle{Perceptron}
+    \begin{itemize}
+        \item $\hat{y} = g(\sum_{i=0}^n w_i x_i)$
+    \end{itemize}
+    \center\includegraphics[width=1.0\textwidth]{Images/perceptron_learning.jpg}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Activation Functions}
+    \center\includegraphics[width=.9\textwidth]{Images/activations.jpg}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Decision Boundary}
+    \center\includegraphics[width=.9\textwidth]{Images/linear_vs_non_linear.png}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Limitations}
+    \includegraphics[width=.45\textwidth]{Images/circles.png}
+    \includegraphics[width=.45\textwidth]{Images/circles_perceptron.png}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Multi-Layer Perceptron}
+    \center\includegraphics[width=.8\textwidth]{Images/mlp.png}
+    \center\includegraphics[width=.3\textwidth]{Images/circles_solved.png}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Making predictions: Forward pass}
+    \center\includegraphics[width=.8\textwidth]{Images/forward_pass.png}
+    \begin{itemize}
+        \item $h_{1_{act}} = W_{h_1} * Inputs$
+        \item $h_{2_{act}} = W_{h_2} * h_{1_{act}}$
+        \item $h_{3_{act}} = W_{h_3} * h_{2_{act}}$
+        \item $\hat{y} = W_{O} * h_{3_{act}}$
+        \item How do we improve the predictions?
+    \end{itemize}
+\end{frame}
 
