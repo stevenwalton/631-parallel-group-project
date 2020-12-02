@@ -3,6 +3,7 @@
 #include <cassert>
 #include <time.h>
 #include <string>
+#include <cmath>
 //#include "nn.h"
 //#include "sequential.h"
 //#include "utils.h"
@@ -15,6 +16,7 @@ double crossEntropyLoss(double y, double y_hat){
     return -(y * log(y_hat) + (1-y) * log(1 - y_hat));
 }
 
+/*
 void defineModel(Sequential &model, float learning_rate)
 {
     //creating the layers
@@ -29,6 +31,7 @@ void defineModel(Sequential &model, float learning_rate)
     //model.add(h2);
     model.add(outputLayer);
 }
+*/
 
 int main(int argc, const char * argv[])
 {

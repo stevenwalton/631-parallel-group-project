@@ -19,7 +19,7 @@ LinearLayer::LinearLayer(int num_inputs, int num_outputs, float lr, int batch_si
 
 void LinearLayer::initializeLayer()
 {
-    int i, j;
+    size_t i, j;
 
     //initializing the weights
     for (i = 0; i < this->num_inputs; i++)
@@ -54,7 +54,7 @@ void LinearLayer::zeroGrad()
     /*
      * Sets the gradients to zero
      */
-	int i, j;
+	size_t i, j;
 	for (i = 0; i < this->num_outputs; i++)
     	{
 		for(j = 0; j < this->batch_size; j++)
@@ -147,14 +147,14 @@ void LinearLayer::updateWeights(std::vector<std::vector<float>> inputs)
 	//******************************************
 	//
 	//updating the bias
-        for (int i = 0; i < this->bias.size(); i++)
+        for (size_t i = 0; i < this->bias.size(); i++)
         {
                 this->bias[i] += math.vector_sum(this->deltas[i]) * this->learning_rate;
         }
 
 	//creating a matrix to hold the weight updates
 	vector<vector<float>> weight_updates;
-	for (int i = 0; i < this->num_inputs; i++)
+	for (size_t i = 0; i < this->num_inputs; i++)
 		weight_updates.push_back(vector<float>(this->num_outputs, 0.0));
 
 	math.matrix_mult(math.matrix_transpose(inputs), math.matrix_transpose(this->deltas), weight_updates);

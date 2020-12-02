@@ -12,7 +12,7 @@ NVCCFLAGS = -gencode arch=compute_75,code=sm_75 #--ptxas-options=-v
 NVCCINC += -I$(CUDA_INSTALL_PATH)/include 
 NVCCINC += -I$(TOOLKIT_INSTALL_PATH)/common/inc
 
-SRC  = $(notdir $(wildcard *.cc)) $(notdir $(wildcard *.cu)) $(notdir $(wildcard *.c))
+SRC  = $(notdir $(wildcard *.cpp)) $(notdir $(wildcard *.cu)) $(notdir $(wildcard *.c))
 
 OBJS = $(addsuffix .o, $(basename $(SRC)))
 EXEC = main
