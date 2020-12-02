@@ -10,9 +10,26 @@ void CopyData(
   unsigned int dsize,
   T** d_in);
 
-void featuresAndLabelsToGPU(std::vector<std::vector<float>>& features,
-                            std::vector<std::vector<float>>& labels,
-                            float** dev_features,
-                            float** dev_labels);
+void featuresAndLabelsToGPU(std::vector<std::vector<float>>&,
+                            std::vector<std::vector<float>>&,
+                            size_t,
+                            float**,
+                            float**,
+                            float**);
+
+void cudaMatrixMultiply(std::vector<std::vector<float>>,
+                        std::vector<std::vector<float>>,
+                        std::vector<std::vector<float>>&);
+
+void matrixToCuda(std::vector<std::vector<float>>&,
+                  std::vector<std::vector<float>>&,
+                  float**,
+                  float**,
+                  float**);
+
+void cudaToMatrix(float**,
+                  std::vector<std::vector<float>>&);
+//void modelToGPU(Sequential&);
+
 
 #endif
