@@ -13,10 +13,10 @@ class LinearLayer
 {
     private:
         math_funcs math;
-        size_t num_inputs;
-        size_t num_outputs;
+        int num_inputs;
+        int num_outputs;
         float learning_rate; 
-	size_t batch_size;
+	int batch_size;
 	
 	//now I'll store the weights as a matrix 
 	//the size will be <num_inputs, num_outputs>
