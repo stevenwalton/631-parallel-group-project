@@ -3,6 +3,7 @@
 *.bbl
 *.blg
 *.log
+*.o
 
 Makefile
 CMakeCache.txt
