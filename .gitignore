@@ -3,6 +3,11 @@
 *.bbl
 *.blg
 *.log
+*.toc
+*.out
+*.o
+*.snm
+*.nav
 
 Makefile
 CMakeCache.txt

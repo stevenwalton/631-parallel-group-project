@@ -10,4 +10,27 @@
 \end{itemize}
 \end{frame}
 
+\begin{frame}
+    \frametitle{CUDA}
+    \begin{itemize}
+        \item Intended to get entire network into GPU but did not have enough
+            time.
+        \item Implemented matrix multiplication.
+        \item Struggled more with getting CUDA configured than writing actual
+            code :(
+        \item Problem being small still resulted in not enough work.
+    \end{itemize}
+\end{frame}
 
+\begin{frame}
+    \frametitle{CUDA}
+    \begin{centering}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        OMP ($\mu$s) & CUDA ($\mu$s) & Kernel ($\mu$s) \\
+        \hline
+        1.213 & 121.734 & 4.98\\
+        \hline
+    \end{tabular}
+    \end{centering}
+\end{frame}

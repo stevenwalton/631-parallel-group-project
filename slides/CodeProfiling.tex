@@ -11,3 +11,12 @@
 \end{frame}
 
 
+\begin{frame}
+    \frametitle{Code Profiling}
+    \begin{itemize}
+        \item Used GProf to profile code.
+        \item Found slowest function \textit{we wrote} was our matrix multiply.
+        \item Found that allocating data took more time. 
+    \end{itemize}
+    \includegraphics[width=\textwidth]{profile.png}
+\end{frame}
