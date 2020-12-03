@@ -72,13 +72,19 @@ void LinearLayer::forward(std::vector<std::vector<float>> batch_inputs)
      	* speedups.
      	*/
 
-    	math.matrix_mult(batch_inputs, this->weights, this->activations);
-	std::cout << "\nRegular activations\n";
-	printFloatMatrix(this->activations);
+	//std::cout << "\nMultiplying\n";
+	//printFloatMatrix(batch_inputs);
+
+	//std::cout << "\nby\n";
+        //printFloatMatrix(this->weights);
+
+    	//math.matrix_mult(batch_inputs, this->weights, this->activations);
+	//std::cout << "\nRegular activations\n";
+	//printFloatMatrix(this->activations);
 
 	cudaMatrixMultiply(batch_inputs, this->weights, this->activations);
-        std::cout << "\n with cuda activations\n";
-        printFloatMatrix(this->activations);
+        //std::cout << "\n with cuda activations\n";
+        //printFloatMatrix(this->activations);
 
 	//matrixToCuda(this->weights, this->activations, &dev_x, &dev_y, &dev_z);
     	//printf("ABORTING ON PURPOSE!!!!\n");
@@ -103,6 +109,7 @@ void LinearLayer::computeDeltas(std::vector<std::vector<float>> previous_errors,
     //weights * previous_errors -> errors
 
     math.matrix_mult(weights, previous_errors, this->errors);
+    //cudaMatrixMultiply(weights, previous_errors, this->errors);
     //3 x 32              32 x 3       3 x 32
     //errors *         tran_elem   deriv(activation) -> deltas
     math.transposed_element_matrix_mult(this->activations, this->errors, this->deltas, math.derivative_sigmoid);
@@ -136,6 +143,7 @@ void LinearLayer::updateWeights(std::vector<std::vector<float>> inputs)
     vector<vector<float>> weight_updates(this->num_inputs, vector<float>(this->num_outputs, 0.0));
     vector<vector<float>> l2_updates(this->weights);
     math.matrix_mult(math.matrix_transpose(inputs), math.matrix_transpose(this->deltas), weight_updates);
+    //cudaMatrixMultiply(math.matrix_transpose(inputs), math.matrix_transpose(this->deltas), weight_updates);
     //using the matrix_add method to basically do
     //weights[i][j] = 1.0 * weights[i][j] + lr * weight_updates[i][j]
 

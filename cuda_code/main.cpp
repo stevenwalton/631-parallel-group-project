@@ -35,7 +35,7 @@ int main(int argc, const char * argv[])
 {
     //setting a random seed
     srand (time(0));
-    //srand(1);
+    //srand(12345);
     string dataset;
     int n_epochs;
     float learning_rate;
@@ -54,9 +54,9 @@ int main(int argc, const char * argv[])
         cout << "Epochs = 500\n";
         cout << "Batch size = 1\n\n";
         dataset = "moons_dataset.txt";
-    	learning_rate = 0.3f;
+    	learning_rate = 0.5f;
         n_epochs = 500;
-        batch_size = 1;
+        batch_size = 8;
     }
 
     //vectors to hold the data

@@ -193,7 +193,9 @@ void math_funcs::matrix_mult(std::vector<std::vector<float>> x,
     for (size_t i =0; i < x_size; ++i) //each row in x
     	for (size_t k = 0; k < x0_size; ++k) //each column in y
             for (size_t j = 0; j < y0_size; ++j) //all columns in x
+	    {
                     z[i][j] += x[i][k] * y[k][j];
+	    }
     */
     /*
      * OMP: Good improvement
@@ -202,11 +204,16 @@ void math_funcs::matrix_mult(std::vector<std::vector<float>> x,
     /*
      * Smart ordering
      */
+    
     #pragma omp parallel for schedule(static)
     for (size_t i =0; i < x_size; ++i) //each row in x
     	for (size_t j = 0; j < y0_size; ++j) //each column in y
-            for (size_t k = 0; k < x0_size; ++k) //all columns in x
-                z[i][j] += x[i][k] * y[k][j];
+	{
+		z[i][j] = 0.0;
+		for (size_t k = 0; k < x0_size; ++k) //all columns in x
+                	z[i][j] += x[i][k] * y[k][j];
+	}
+		
 }
 
 void math_funcs::matrix_plus_vec(std::vector<std::vector<float>> &x, std::vector<float> b)

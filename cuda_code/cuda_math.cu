@@ -38,9 +38,9 @@ cuda_matrix_mult(size_t inner_size, size_t y_cols,
 	__syncthreads();
 
 	if(tid == 0){
-		z[row*inner_size + col] = 0.0;
+		z[row*y_cols + col] = 0.0;
 		for (i = 0; i < n_threads; i++)
-			z[row*inner_size + col] += shared_mem[i];
+			z[row*y_cols + col] += shared_mem[i];
 	}
 }
 
