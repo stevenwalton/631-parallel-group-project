@@ -15,8 +15,7 @@
 //result matrix
 template <class T>
 __global__ void
-cuda_matrix_mult(size_t inner_size, size_t y_cols,
-                 T* x, T* y, T* z)
+cuda_matrix_mult(size_t inner_size, size_t y_cols, T* x, T* y, T* z)
 {
     	extern __shared__ double shared_mem[];
     	int row = blockIdx.x;
@@ -42,6 +41,40 @@ cuda_matrix_mult(size_t inner_size, size_t y_cols,
 		for (i = 0; i < n_threads; i++)
 			z[row*y_cols + col] += shared_mem[i];
 	}
+}
+
+//one block per row in the resulting matrix
+//each thread will take care of one of the columns
+//thus, we need to have as many threads as columns
+//Luis' important note: 
+//of course this limits the size of the matrix that 
+//can actually be obtained to N X 1024 which should
+//be enough for our purposes
+template <class T>
+__global__ void
+cuda_matrix_mult_v2(size_t inner_size, T* x, T* y, T* z)
+{
+        extern __shared__ double shared_mem[];
+        int row = blockIdx.x;
+        int tid = threadIdx.x;  //basically the col
+        int n_cols = blockDim.x;
+
+        size_t i;
+        //clear the shared memory
+        shared_mem[tid] = 0.0;
+        __syncthreads();
+
+        //printf("\nrow = %d col = %d\n", row, col);
+
+        for (i = 0; i < inner_size; ++i)
+        {
+                shared_mem[tid] += x[row * inner_size + i] * y[i * n_cols + tid];
+        }
+        __syncthreads();
+
+	//no reduction or further synchronization needed, 
+	//simply write to output array
+	z[row * n_cols + tid] = shared_mem[tid];
 }
 
 /*Steven's version
@@ -216,20 +249,29 @@ void cudaMatrixMultiply(std::vector<std::vector<float>> x,
     //printf("We made it out\n");
 }
 
-
-/*
-void modelToGPU(Sequential& model)
+void cudaMatrixMultiplyv2(std::vector<std::vector<float>> x,
+                        std::vector<std::vector<float>> y,
+                        std::vector<std::vector<float>>& z)
 {
-    //std::vector<LinearLayer> layers= model.getLayers();
-}
-*/
+    float* dev_x;
+    float* dev_y;
+    float* dev_z;
+    matrix2Cuda(x, &dev_x);
+    matrix2Cuda(y, &dev_y);
+    matrix2Cuda(z, &dev_z);
+    //cuda_matrix_mult<<<x[0].size(), y.size()>>>(x[0].size(), y.size(), dev_x, dev_y, dev_z);
+    size_t threads=y[0].size();
+    //1024 is the max number of threads per block
+    assert(threads <= 1024);
 
-// We want to keep everything in the cuda memory so redo a lot of stuff
-/*
-template <class T>
-__global__ void
-cuda_forward(T* inputs, T* outputs)
-{
+    //One block for each row in the resulting matrix
+    dim3 dimGrid(x.size(), 1, 1);
+    //Each block has as many threads as columns in the resulting matrix
+    dim3 dimBlock(threads, 1, 1);
+    //Using some shared memory, one float for each thread.
+    unsigned int shared = threads * sizeof(float);
+    cuda_matrix_mult_v2<<<dimGrid, dimBlock, shared>>>(x[0].size(), dev_x, dev_y, dev_z);
+    //TODO
+    cuda2Matrix(dev_z, z);
+    //printf("We made it out\n");
 }
-*/
-

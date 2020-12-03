@@ -82,7 +82,7 @@ void LinearLayer::forward(std::vector<std::vector<float>> batch_inputs)
 	//std::cout << "\nRegular activations\n";
 	//printFloatMatrix(this->activations);
 
-	cudaMatrixMultiply(batch_inputs, this->weights, this->activations);
+	cudaMatrixMultiplyv2(batch_inputs, this->weights, this->activations);
         //std::cout << "\n with cuda activations\n";
         //printFloatMatrix(this->activations);
 

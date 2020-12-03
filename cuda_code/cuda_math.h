@@ -27,6 +27,9 @@ void cudaMatrixMultiply(std::vector<std::vector<float>>,
                         std::vector<std::vector<float>>,
                         std::vector<std::vector<float>>&);
 
+void cudaMatrixMultiplyv2(std::vector<std::vector<float>>,
+                        std::vector<std::vector<float>>,
+                        std::vector<std::vector<float>>&);
 template <class T>
 void cuda2Matrix(T* dev_z,std::vector<std::vector<T>>& z);
 template <class T>
