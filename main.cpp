@@ -1,13 +1,15 @@
 #include <iostream>
-#include "nn.h"
-#include "sequential.h"
 #include <vector>
 #include <cassert>
 #include <time.h>
-#include "utils.h"
 #include <string>
+#include <cmath>
+#include <algorithm>
+#include "nn.h"
+#include "sequential.h"
+#include "utils.h"
 
-#include <chrono>
+#include "cuda_math.h"
 
 using namespace std;
 
@@ -18,21 +20,15 @@ double crossEntropyLoss(double y, double y_hat){
 void defineModel(Sequential &model, float learning_rate)
 {
     //creating the layers
-    LinearLayer inputLayer(2,100, learning_rate, model.getBatchSize());
-    LinearLayer h1(100,100, learning_rate, model.getBatchSize());
-    LinearLayer h2(100,100, learning_rate, model.getBatchSize());
-    LinearLayer h3(100,100, learning_rate, model.getBatchSize());
-    LinearLayer h4(100,100, learning_rate, model.getBatchSize());
-    LinearLayer h5(100,100, learning_rate, model.getBatchSize());
-    LinearLayer outputLayer(100,1, learning_rate, model.getBatchSize());
+    LinearLayer inputLayer(2,3, learning_rate, model.getBatchSize());
+    LinearLayer h1(3,3, learning_rate, model.getBatchSize());
+    LinearLayer h2(3,3, learning_rate, model.getBatchSize());
+    LinearLayer outputLayer(3, 1, learning_rate, model.getBatchSize());
 
     //Adding the layers to the model
     model.add(inputLayer);
     model.add(h1);
-    model.add(h2);
-    model.add(h3);
-    model.add(h4);
-    model.add(h5);
+    //model.add(h2);
     model.add(outputLayer);
 }
 
@@ -40,28 +36,28 @@ int main(int argc, const char * argv[])
 {
     //setting a random seed
     srand (time(0));
-    //srand(1);
+    //srand(12345);
     string dataset;
     int n_epochs;
     float learning_rate;
     int batch_size;
 
     if (argc == 5){
-	dataset = argv[1];
+        dataset = argv[1];
         learning_rate = stof(argv[2]);
         n_epochs = stoi(argv[3]);
-	batch_size = stoi(argv[4]);
+        batch_size = stoi(argv[4]);
     }else{
         cout << "Usage: \n\t./nn <dataset_file> <lr> <n_epochs>\n\n";
         cout << "Using default values: \n\n";
-	cout << "Dataset = moons_dataset.txt\n";
+        cout << "Dataset = moons_dataset.txt\n";
         cout << "Learning rate = 0.3\n";
         cout << "Epochs = 500\n";
-	cout << "Batch size = 1\n\n";
+        cout << "Batch size = 8\n\n";
         dataset = "datasets/moons_dataset.txt";
-    	learning_rate = 0.3f;
-        n_epochs = 100;
-        batch_size = 32;
+    	learning_rate = 0.5f;
+        n_epochs = 500;
+        batch_size = 8;
     }
 
     //vectors to hold the data
@@ -74,26 +70,28 @@ int main(int argc, const char * argv[])
     Sequential model;
     model.setBatchSize(batch_size);
     defineModel(model, learning_rate);
-    //cout << endl;
-    //model.printModel();
+    cout << endl;
+    model.printModel();
 
     //float epochLoss;
     int epochHits; 
     vector<float> predictions;
-    vector<vector<float> > batch_preds;
+    vector<vector<float>> batch_preds;
     int batch_loops = features.size() / batch_size;
     
     /************* Training  *********************/
 
-    //cout << "Starting training, using learning rate = " << model.getLayers()[0].getLearningRate() << "\n";
+    cout << "Starting training, using learning rate = " << model.getLayers()[0].getLearningRate() << "\n";
     
-    //float accuracy; 
-    auto start = std::chrono::high_resolution_clock::now();
+    float accuracy;
+    int prediction;
     for (int n = 0; n < n_epochs; n++)
     {
+	//cout << "Epoch " << n << endl;
         epochHits = 0;
         for (int i = 0; i < batch_loops; ++i)
         {
+	    //cout << "Batch " << i+1 << "/" << batch_loops << endl;
             vector<vector<float>> feature_vec(batch_size);
             vector<int> label_vec(batch_size);
             for (int j = 0; j < batch_size; ++j)
@@ -107,6 +105,10 @@ int main(int argc, const char * argv[])
             {
                 if(round(batch_preds[j][0]) == label_vec[j])
                     epochHits += 1;
+
+		//prediction = std::distance(batch_preds[j].begin(), std::max_element(batch_preds[j].begin(), batch_preds[j].end()));
+		//if( prediction == label_vec[j])
+		//	epochHits += 1;
             }
         }
 
@@ -119,18 +121,13 @@ int main(int argc, const char * argv[])
         }
         */
 
-        /*
         accuracy = (float)epochHits/(float)features.size();
-	cout << "Epoch " << n << " Accuracy: " << accuracy << "\n";
+        cout << "Epoch " << n << " Accuracy: " << accuracy << "\n";
     	if(accuracy == 1)
-	{
-		cout << "Reached accuracy of 1. Stopping early" << endl;
-		break;
-	}
-        */
+        {
+        	cout << "Reached accuracy of 1. Stopping early" << endl;
+        	break;
+        }
     }
-    auto end = std::chrono::high_resolution_clock::now();
-    auto total = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    cout << (double)total.count()/(double)1000 << endl;
     return 0;
 }

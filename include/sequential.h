@@ -23,6 +23,8 @@ class Sequential
         void trainIteration(std::vector<std::vector<float>>, std::vector<int>);
         void backward(std::vector<std::vector<float>>, std::vector<std::vector<float>>);
         std::vector<std::vector<float>> lossFunctionDerivative(std::vector<std::vector<float>>, std::vector<int>);
+	std::vector<std::vector<float>> crossEntropyLossDerivative(std::vector<std::vector<float>>, std::vector<int>);
+	std::vector<float> crossEntropyLoss(std::vector<std::vector<float>>, std::vector<int>);
         // Helpers
         void printModel();
 };

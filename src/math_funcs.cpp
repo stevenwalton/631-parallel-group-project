@@ -232,6 +232,12 @@ void math_funcs::map_function(std::vector<std::vector<float>> &x, float func (fl
             x[i][j] = func(x[i][j]);
 }
 
+void math_funcs::map_function(std::vector<float> &x, float func (float))
+{
+        for (size_t i = 0; i < x.size(); ++i)
+                        x[i] = func(x[i]);
+}
+
 std::vector<std::vector<float>> math_funcs::matrix_transpose(std::vector<std::vector<float>> x)
 {
     /*
@@ -306,4 +312,28 @@ void math_funcs::transposed_element_matrix_mult(std::vector<std::vector<float>> 
     for (size_t i = 0; i < x.size(); ++i)
         for (size_t j = 0; j < x[0].size(); ++j)
             z[j][i] = func(x[i][j]) * y[j][i];
+}
+
+std::vector<float> math_funcs::sumRows(std::vector<std::vector<float>> m)
+{
+	std::vector<float> result;
+	for (std::vector<float> v : m)
+		result.emplace_back(vector_sum(v));
+	return result;
+}
+
+std::vector<float> math_funcs::selectFromMatrix(std::vector<std::vector<float>> m, std::vector<int> indexes)
+{
+        assert(m.size() == indexes.size());
+        std::vector<float> results;;
+        for(size_t i = 0; i < m.size(); ++i)
+                results.emplace_back(m[i][indexes[i]]);
+        return results;
+}
+
+void math_funcs::setMatrix2Value(std::vector<std::vector<float>> &m, std::vector<int> indexes, float value)
+{
+        assert(m.size() == indexes.size());
+        for(size_t i = 0; i < m.size(); ++i)
+                m[i][indexes[i]] = value;
 }

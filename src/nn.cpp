@@ -206,3 +206,4 @@ void LinearLayer::printWeights()
         std::cout << std::endl;
     }	
 }
+
