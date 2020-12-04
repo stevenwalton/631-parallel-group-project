@@ -12,23 +12,20 @@ void readDataset(std::string filename, std::vector<std::vector<float>> &features
     std::string element;
     std::ifstream myfile (filename);
 
-    float x,y;
-
     if (myfile.is_open()){
         while ( getline (myfile, line) )
         {
             std::stringstream ss(line);
-            getline(ss, element, ',');
-            x = stof(element);
-            getline(ss, element, ',');	
-            y = stof(element);
-
-            std::vector<float> feature_instance{x, y};
-            features.emplace_back(feature_instance);
-
-            getline(ss, element, ',');
-            //std::vector<float> label_instance{stof(element)};
-            labels.emplace_back(stoi(element));
+	    std::vector<float> feature_instance;
+	    while (ss.good())
+	    {
+		getline(ss, element, ',');
+                feature_instance.emplace_back(stof(element));
+	    }
+	    
+            labels.emplace_back((int)feature_instance[feature_instance.size()-1]);
+	    feature_instance.pop_back();
+	    features.emplace_back(feature_instance);
 	}
         myfile.close();
     }
