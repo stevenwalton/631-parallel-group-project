@@ -18,13 +18,13 @@ double crossEntropyLoss(double y, double y_hat){
 void defineModel(Sequential &model, float learning_rate)
 {
     //creating the layers
-    LinearLayer inputLayer(2,100, learning_rate, model.getBatchSize());
-    LinearLayer h1(100,100, learning_rate, model.getBatchSize());
-    LinearLayer h2(100,100, learning_rate, model.getBatchSize());
-    LinearLayer h3(100,100, learning_rate, model.getBatchSize());
-    LinearLayer h4(100,100, learning_rate, model.getBatchSize());
-    LinearLayer h5(100,100, learning_rate, model.getBatchSize());
-    LinearLayer outputLayer(100,1, learning_rate, model.getBatchSize());
+    LinearLayer inputLayer(2,300, learning_rate, model.getBatchSize());
+    LinearLayer h1(300,300, learning_rate, model.getBatchSize());
+    LinearLayer h2(300,300, learning_rate, model.getBatchSize());
+    LinearLayer h3(300,300, learning_rate, model.getBatchSize());
+    LinearLayer h4(300,300, learning_rate, model.getBatchSize());
+    LinearLayer h5(300,300, learning_rate, model.getBatchSize());
+    LinearLayer outputLayer(300,1, learning_rate, model.getBatchSize());
 
     //Adding the layers to the model
     model.add(inputLayer);
