@@ -58,7 +58,7 @@ int main(int argc, const char * argv[])
         cout << "Learning rate = 0.3\n";
         cout << "Epochs = 500\n";
 	cout << "Batch size = 1\n\n";
-        dataset = "moons_dataset.txt";
+        dataset = "datasets/moons_dataset.txt";
     	learning_rate = 0.3f;
         n_epochs = 100;
         batch_size = 32;
