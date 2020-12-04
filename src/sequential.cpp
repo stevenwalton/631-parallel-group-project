@@ -63,6 +63,7 @@ void Sequential::trainIteration(std::vector<std::vector<float>> training_inputs,
 {
     std::vector<std::vector<float>> preds = this->forward(training_inputs);
     this->backward(lossFunctionDerivative(preds, labels), training_inputs);
+    //this->backward(crossEntropyLossDerivative(preds, labels), training_inputs);
 }
 
 std::vector<std::vector<float>> Sequential::lossFunctionDerivative(std::vector<std::vector<float>> predictions, std::vector<int> labels)
@@ -81,6 +82,62 @@ std::vector<std::vector<float>> Sequential::lossFunctionDerivative(std::vector<s
     return errors;
 }
 
+std::vector<std::vector<float>> Sequential::crossEntropyLossDerivative(std::vector<std::vector<float>> logits, std::vector<int> labels)
+{
+        //logits has size <batch_size, num_classes>
+        //labels has size <batch_size> and each input is in the range [0, num_classes-1]
+	
+	//creating a copy of the logits
+	std::vector<std::vector<float>> softmax(logits);
+	
+	//taking the exp of the logits
+	math.map_function(softmax, exp);
+
+	//std::cout << "\nExp logits: \n";
+        //printFloatMatrix(softmax);
+
+	//summing the log exp logits for all classes
+	std::vector<float> sums = math.sumRows(softmax);
+
+	//std::cout << "\nSummed rows: \n";
+        //for(float in : sums)
+        //        std::cout << in << " ";
+        //std::cout << std::endl;
+
+	//We need to do softmax / sums effectively dividing each element in softmax by 
+	//its corresponding sum to get a vector that sums to 1
+	math.inverse_scale_matrix(sums, softmax);
+	
+	//std::cout << "\nSoftmax: \n";
+        //printFloatMatrix(softmax);
+	
+	//creating a zeros matrix like logits
+	std::vector<std::vector<float>> correct_classes(logits.size(), std::vector<float>(logits[0].size(), 0.0));
+	//for(size_t i = 0; i < logits.size(); ++i):
+	//	correct_classes.push_back(std::vector<float>(logits[0].size(), 0.0));
+
+	//Setting 1.0 in the index of the correct class
+	math.setMatrix2Value(correct_classes, labels, 1.0);
+
+        //std::cout << "\nCorrect classes: \n";
+        //printFloatMatrix(correct_classes);
+	
+	//doing (-correct_classes + softmax)
+	math.matrix_add(softmax, correct_classes, softmax);
+
+        //std::cout << "\nSoftmax-correct_classes: \n";
+        //printFloatMatrix(softmax);
+
+	//dividing by batch_size
+	math.inverse_scale_matrix(logits.size(), softmax);
+
+	//std::cout << "\nDivided by batch_size: \n";
+        //printFloatMatrix(softmax);
+
+	//returning the gradients <batch_size, num_classes>
+	return softmax;
+}
+
 /***************** Helper functions **********************************/
 void Sequential::printModel()
 {
@@ -90,4 +147,5 @@ void Sequential::printModel()
     std::cout << "\n";
 
 }
+
 

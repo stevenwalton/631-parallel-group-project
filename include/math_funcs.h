@@ -52,8 +52,8 @@ class math_funcs
                          std::vector<std::vector<float>>,
                          std::vector<std::vector<float>>&);
 	void matrix_plus_vec(std::vector<std::vector<float>>&, std::vector<float>);
-	void map_function(std::vector<std::vector<float>> &, 
-			  float func (float));
+	void map_function(std::vector<std::vector<float>> &, float func (float));
+	void map_function(std::vector<float> &, float func (float));
 	void elem_matrix_mult(std::vector<std::vector<float>>,
                               std::vector<std::vector<float>>,
                               std::vector<std::vector<float>>&);
@@ -64,6 +64,9 @@ class math_funcs
 	void transposed_element_matrix_mult(std::vector<std::vector<float>>,
                                             std::vector<std::vector<float>>,
                                             std::vector<std::vector<float>>&);
+	std::vector<float> sumRows(std::vector<std::vector<float>> m);
+	std::vector<float> selectFromMatrix(std::vector<std::vector<float>>, std::vector<int>);
+	void setMatrix2Value(std::vector<std::vector<float>> &, std::vector<int>, float);
 	std::vector<std::vector<float>> matrix_transpose(std::vector<std::vector<float>>);
 };
 
