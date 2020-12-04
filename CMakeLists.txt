@@ -33,8 +33,6 @@ if(OMP)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
-if (CUDA)
-    #find_package(CUDA REQUIRED)
-endif()
 # Executables
-add_executable(main main.cpp ${Sources})
+
+add_executable(main main.cpp ${Sources} ${CSources} ${CudaSources})
