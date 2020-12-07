@@ -8,9 +8,12 @@
 *.o
 *.snm
 *.nav
+*.pdf
+*.brf
 
 Makefile
 CMakeCache.txt
 CMakeFiles
 cmake_install.cmake
 main
+.DS_Store
