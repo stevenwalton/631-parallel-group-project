@@ -1,0 +1,9 @@
+\section{Conclusions}
+
+\subsection{Luis' conclusions}
+
+Working on this project really helped me understand the strengths and weaknesses of parallel programming. Before this, I had only ever used GPU-acceleration via the highly-optimized, ready-to-use options that DNN libraries like PyTorch offer. However, these libraries abstract all of the inner-workings away from the user. Thus, while I could observe, and benefit from, the increased performance, I did not understand how or why it worked. 
+
+The work I did both on this project and the course assignments allowed me to realize some of the nuances that go into creating parallel code. For example, I now understand that there are many different ways in which a given problem, even a simple one like matrix multiplication, can be mapped to the GPU and that different mappings can lead to significantly different performances.
+
+If there's something I take away from this project it is that creating code that works in parallel can actually hurt performance if there isn't enough work to be done. Parallelizing introduces overhead in several forms, such as the need for thread synchronization or the movement of data between CPU and GPU, which needs to be counter-balanced by the ability to do more computations concurrently. Nonetheless, when used correctly, the benefits of parallel code are evident and I'm glad to know more about this topic and actually have some hands-on experience with it.
