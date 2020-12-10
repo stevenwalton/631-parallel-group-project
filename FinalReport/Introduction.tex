@@ -4,7 +4,7 @@ In the past decade, Artificial Neural Networks (ANNs) have become increasingly
 popular, with advances in the area affecting almost every sector of computing.
 Deep Neural Networks (DNNs) \--- deeper, more complex models than their
 `shallow' counterparts \--- have progressed from being academic curiosities to
-being the cornerstone of many modern technologies.  Given this newfound
+being the cornerstone of many modern technologies~\cite{deep_learning_overview}.  Given this newfound
 relevance, many researchers have devoted a lot of time optimizing these
 algorithms, constantly trying to improve them for different accelerator
 technologies and platforms. Even long before accelerators, many efforts in
@@ -36,15 +36,14 @@ algorithm that is commonly used to train them.
 
 The Perceptron, also referred to as ``neuron'', is the basic unit of an ANN. It
 is a mathematical function that was inspired by the biological neurons in the
-human brain. Its mathematical formula is presented in Equation
-\ref{eq:pereceptron}. It consists of a dot product between a feature vector $x$
+human brain~\cite{rosenblatt1958perceptron}. Its mathematical formula is presented in Equation~\ref{eq:perceptron}. It consists of a dot product between a feature vector $x$
 and a weights vector $w$. The resulting dot product of these vectors is then fed
-into a function $g$ known as \textit{activation} which yields the output
+into a function $g$ known as \textit{activation}~\cite{activation_functions} which yields the output
 $\hat{y}$ of the neuron.
 
 \begin{align}
     \hat{y} = g\left(\sum^n_{i=0} w_ix_i\right)
-    \label{eq:pereceptron}
+    \label{eq:perceptron}
 \end{align}
 
 Perceptrons can be used to solve regression (estimating real values) or
@@ -56,7 +55,7 @@ from a uniform distribution. By providing random initializations networks
 typically converge faster and generalize better.
 
 As for the activation function, Figure~\ref{fig:activations} presents a few
-examples of commonly used ones. The bottom-right image in
+examples of commonly used ones~\cite{activation_functions}. The bottom-right image in
 Figure~\ref{fig:activations} shows an example of a linear activation in the form
 of the Identity function. The other three examples represent non-linear
 activations: the Sigmoid (bottom-left) function yields an output between 0 and
@@ -108,11 +107,11 @@ criteria or a maximum number of iterations is reached.
     \label{fig:perceptron_train}
 \end{figure}
 
-The Gradient Descent (GD) algorithm is an optimization technique that is used to
+The Gradient Descent (GD) algorithm~\cite{gradient_descent} is an optimization technique that is used to
 train perceptrons. The main idea behind GD is to update the weights in the
 direction of the gradient of the function used to compute the error between the
 perceptron's outputs and the expected ones. This function is commonly referred
-to as \textit{Loss} function. The actual problem being solved determines the
+to as \textit{Loss} function~\cite{loss_functions}. The actual problem being solved determines the
 type of loss function that should be used. For example, in regression problems
 the Mean Squared Error (MSE) loss function is a typical choice. For binary
 classification problems, Binary Cross-Entropy loss or Hinge loss are good
@@ -151,7 +150,7 @@ of the loss is obtained in the following manner:
 \end{align}
 
 There are some variations to the GD algorithm, each with its own strengths and
-weaknesses. In Stochastic Gradient Descent (SGD), the weights are updated for
+weaknesses. In Stochastic Gradient Descent (SGD)~\cite{gradient_descent}, the weights are updated for
 each training sample in the dataset, i.e. the output of one feature vector is
 obtained, the derivative of the loss function for that output is computed, and
 the weights are updated according to the GD formula. This version is, of course,
@@ -167,7 +166,7 @@ attempts to pull in its own direction.
     \label{fig:sgd}
 \end{figure}
 
-The (Mini) Batch Gradient Descent (BGD) variation instead splits the training
+The (Mini) Batch Gradient Descent (BGD)~\cite{gradient_descent} variation instead splits the training
 samples into small-sized batches and only updates the weights once per each
 batch. Thus, using BGD makes the algorithm behave more smoothly with less
 pronounced changes in its path towards convergence as it is shown in
@@ -215,8 +214,8 @@ In problems such as the this one using an ANN, also known as Multi-Layer
 Perceptrons (MLPs), becomes necessary. A MLP consists in several perceptrons
 connected together to form a ``network''. In the literature, there exist
 multiple ways in which the perceptrons can be arranged to form different
-architectures. However, in this work we focus on the architecture known as
-``Feed-Forward Neural Network'' (FFNN), shown in Figure~\ref{fig:ffnn}. In
+architectures~\cite{deep_learning_overview}. However, in this work we focus on the architecture known as
+``Feed-Forward Neural Network'' (FFNN)~\cite{ffnn}, shown in Figure~\ref{fig:ffnn}. In
 FFNNs, all neurons in one layer are connected to all of the neurons in the
 following layer, hence the name Feed-Forward.
 
@@ -243,7 +242,7 @@ one output neuron, usually with an identity linear activation. In binary
 classification problems, one output neuron is sufficient. A sigmoid activation
 is also usually used in these cases, with labels 0 and 1 used to represent the
 two classes. For multi-class classification, the number of neurons in the output
-layer matches the number of classes being identified and a \textit{Softmax}
+layer matches the number of classes being identified and a \textit{Softmax}~\cite{pattern_recognition}
 (Equation \ref{eq:softmax}) operation is applied to the results of the output
 layer neurons' to create a probability distribution vector. The class prediction
 is then obtained by obtaining the argmax of such probability vector.
@@ -298,7 +297,7 @@ Updating the weights in a FFNN is more complex than with a single perceptron.
 The loss function merely determines the error at the output layer of the
 network. It is then necessary to propagate such error through every layer in the
 network all the way back to the input layer. To achieve this, the
-\textit{Backpropagation} algorithm is used (Figure~\ref{fig:backprop}).
+\textit{Backpropagation} algorithm~\cite{backprop} is used (Figure~\ref{fig:backprop}).
 
 \begin{figure}[!htbp]
     \centering
@@ -330,3 +329,4 @@ using the GD formula (Equations~\ref{eq:update1}-\ref{eq:update4}).
     W_{h_3} &= W_{h_3} - \gamma ((h_{2_{\textit{act}}})^T \cdot h_{3_{\textit{error}}}) \label{eq:update3} \\
     W_{O} &= W_{O} - \gamma ((h_{3_{\textit{act}}})^T \cdot O_{\textit{error}}) \label{eq:update4}
 \end{align}
+
