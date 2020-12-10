@@ -1,2 +1,97 @@
 \section{Methodology}\label{sec:method}
 
+For this project we set out to design a robust framework to build neural
+networks, drawing inspiration form industry and academic standards like PyTorch
+and TensorFlow. With this idea in place we set out to make a framework that
+allowed for 1) arbitrary network sizes 2) easy integration of different network
+features, such as different forms of gradient descent or regularizers, and 3)
+modularity that would allow for further expandability. We found these features
+to be important for several reasons, besides trying to mimic something that
+would be useful and not a one-trick pony. By having arbitrary network sizes this
+would allow us to test on a wide variety of datasets. Furthermore we had
+suspicions when starting the project that a network that could be trained well
+on simple datasets may also not be large enough to benefit much from
+parallelization. By allowing for arbitrary network sizes this would allow us to
+better test as the project progressed. Easy integration of new features and
+extendability this allowed us to quickly test more ideas and expand the project,
+as we did not know how much we would be able to implement. With this unknown
+factor and a short deadline being able to quickly add new features without major
+code rewrites is a valuable tool. 
+
+To create these features we broke out the network into multiple classes, again
+drawing on inspiration from PyTorch and HPC tools like VTK-m. We separated out
+all our math functions into one class, individual linear layers into another
+class, and finally the model into a super class. With this construction we could
+implement networks of arbitrary sizes, extend them, modify our algorithms, and
+so on with little conflict. In Figure~\ref{fig:model} we show the code required
+to generate a simple model that will accurately classify the Moons Dataset. As
+can be seen, this allows for a very similar construction style to that of
+PyTorch, where one simply needs to define the Linear Layers with the input and
+output size and how they are connected. Similarly our Sequential class
+determines how to connect all the nodes together and creates all the connections
+that will be needed for the Forward and Backwards functions. In our example the
+construction under the ``creating layers'' section is similar to PyTorch's model
+constructor and our ``Adding layers to the model'' section is similar to
+PyTorch's ``forward'' function.
+
+\begin{figure}[ht]
+\begin{lstlisting}[language=C++,
+                   directivestyle={\color{black}},
+                   emph={size_t, LinearLayer, defineModel, Sequential, float},
+                   emphstyle={\color{blue}}]
+void defineModel(Sequential &model, 
+                 float learning_rate)
+{
+    //creating layers
+    LinearLayer i_layer(2,3, 
+                   learning_rate, 
+                   model.getBatchSize());
+    LinearLayer h1(3,3, 
+                   learning_rate, 
+                   model.getBatchSize());
+    LinearLayer h2(3,3, 
+                   learning_rate, 
+                   model.getBatchSize());
+    LinearLayer o_layer(3,1, 
+                   learning_rate, 
+                   model.getBatchSize());
+
+    //Adding layers to the model
+    model.add(i_layer);
+    model.add(h1);
+    model.add(h2);
+    model.add(o_layer);
+}
+\end{lstlisting}
+\caption{Example model construction}
+\label{fig:model}
+\end{figure}
+
+In a similar fashion we designed the rest of the network. This was particularly
+helpful in that the math library was similarly fashioned. By the arbitrary input
+sizes we could simply focus on the operations that took the most time.
+Similarly, this made it simpler to optimize because we could directly find which
+mathematical operations were performing the most work and that it matched our
+intuition. 
+
+While this all worked as expected for our OpenMP implementation this methodology
+gave us problems when we started to build our CUDA implementation. With our
+inexperience in CUDA we had assumed that porting the majority of the network
+would be similar and we would only need to create new kernels for our math
+functions. By the time we had started to really understand CUDA we had a fully
+developed and working OpenMP implementation that was working well and showed
+significant performance increases through parallelization. We learned a valuable
+lesson about how good design choices for a CPU implementation did not
+necessarily equate to good design choices for GPU acceleration. Had we had more
+CUDA experience, or any, going into the project we would have likely made
+different design choices. Had we more time to spend on this project we would
+have spent more time learning about how to implement structures in CUDA and that
+would have helped integrate the designs. 
+
+\subsection{Computing Resources}
+We performed our experiments on one system, UO's Alaska in the CDUX group. All
+OpenMP operations were performed on the head node, which has 2 Intel Xeon
+E5-2667v3's that have 8 physical cores and 16 threads, each, for a total of 32
+threads. All CUDA operations were performed on compute node 2 which has a single
+Intel Xeon E5-1650 with 6 physical cores and 12 threads as well as an Nvidia
+GeForce RTX 2080Ti. 

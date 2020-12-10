@@ -5,11 +5,11 @@ we discuss the optimization techniques we performed, in the second
 section (Sec~\ref{sec:r-omp}) we discuss our OpenMP implementation, and finally
 in the third section (Sec~\ref{sec:r-cuda}) we discuss our CUDA implementation. 
 
-\subsection{Optimizaton}\label{sec:r-opt}
+\subsection{Serial Optimizaton}\label{sec:r-opt}
 In common fashion, before we start implementing parallelization we first started
 optimizing the serial implementation of our code. We do this first because many
 optimization techniques are about memory access and reducing the number of times
-an address is accessed. This helps with both OMP and CUDA parallelization
+an address is accessed. This helps with both OpenMP and CUDA parallelization
 because in both cases we will still want to reduce our memory footprint. While
 CUDA optimization won't see as much benefits from this exercise, as CUDA
 optimization is more dependent upon multi-dimensional memory access, using
@@ -35,20 +35,20 @@ results.
                    directivestyle={\color{black}},
                    emph={size_t},
                    emphstyle={\color{blue}}]
-for(size_t i = 0; i < vec.size(); ++i)
-   for(size_t j = 0; j < vec[0].size(); ++j)
-      computation
+for(size_t i = 0; i < v.size(); ++i)
+ for(size_t j = 0; j < v[0].size(); ++j)
+  computation
 \end{lstlisting}
 (b)
 \begin{lstlisting}[language=C++,
                    directivestyle={\color{black}},
                    emph={size_t},
                    emphstyle={\color{blue}}]
-size_t v_size = vec.size();
-size_t v0_size = vec[0].size();
+size_t v_size = v.size();
+size_t v0_size = v[0].size();
 for(size_t i = 0; i < v_size; ++i)
-   for(size_t j = 0; j < v0_size; ++j)
-      computation
+ for(size_t j = 0; j < v0_size; ++j)
+  computation
 \end{lstlisting}
 \caption{Reducing loop lookups. (a) unoptimized (b) optimized}
 \label{fig:opt}
@@ -62,12 +62,13 @@ exploit our parallelism. One final optimization that we did is optimize the
 matrix multiplication to get the best indexing we could, over a naive version
 that was initially implemented. This provided the largest speedup.
 
-\subsection{OpenMP}\label{sec:r-omp}
+\subsection{OpenMP Implementation}\label{sec:r-omp} 
+
 After we have ensured that proper pipelining and serial optimization are
-implemented the next task is to parallelize. Because of the shared memory in OMP
-our optimizations in Section~\ref{sec:r-opt} we only have to access these memory
-points once and then we can share that memory across the threads. Because most
-of our computation was in the form of vector or matrix operations we can
+implemented the next task is to parallelize. Because of the shared memory in
+OpenMP our optimizations in Section~\ref{sec:r-opt} we only have to access these
+memory points once and then we can share that memory across the threads. Because
+most of our computation was in the form of vector or matrix operations we can
 pipeline like above, share the memory, and parallelize the outer most loop so
 that we can exploit the faster stride on the inside of the loop, since those
 points are contiguous in memory and the outer loop isn't. 
@@ -100,10 +101,18 @@ without either matrix multiply nor vector add implemented runs slightly faster
 than when just matrix multiply is removed. We believe that this is because of
 the lack of work. One other factor to note is that at 16 threads we note a
 slight increase, where previously we were strictly decreasing. This is because
-our machine has 2 Xeons with 8 physical cores (a total of 16) but they have 2
-threads per core. Some work performs better on physical cores rather than
-hyper-threading, which is why it is turned off in many HPC applications, and we
-see that this holds true here. 
+our machine has 16 physical cores 16 but they have 2 threads per core. Some work
+performs better on physical cores rather than hyper-threading, which is why it
+is turned off in many HPC applications, and we see that this holds true here. To
+aid in this analysis we draw a vertical gray line to bifurcate where
+hyper-threading begins. We
+note that our fastest run was at 16 threads, executing at $40.128$s ($4.47$x
+speedup) and the 32 thread implementation ran at $46.072$s ($3.89$x speedup). We
+also note that the fastest hyper-threading implementation happened at 28
+threads, $42.938$s ($4.17$x speedup). We believe that this is due to some
+peculiarity in how hyper-threading works. We notice that there was more
+uncertainty within this region. This gives evidence that for faster and more
+stable computation one should disable hyper-threading.
 
 \begin{figure}[ht]
 \centering
@@ -114,26 +123,56 @@ see that this holds true here.
 \end{figure}
 
 Additionally we look at our matrix multiplication vs using a cache optimized
-version. We can see the results in Figure~\ref{fig:cache}. We see here that we
-don't get speedup even though we are better cache aligned. The reason, again,
-for this is because the lack of work as well as the size of the matrices. The
-problem with this is that our matrices aren't very large. Which we have many
-rows, we don't have very many columns. This causes no real speedup from blocking
-the matrices up because at most we can block is 2. This ends up causing more
-cache misses than hits. We predict that even MNIST wouldn't give us a
-significant improvement. We do not expect this to provide significant speedups
-until we start working on larger problems like ImageNet. Additionally we had
-problems with the block matrices because our matrices were inconsistent sizes,
-including sometimes vectors. Vectors happened when at the final layer. This made
-for very inconsistent results. We got the best results when blocking by 2 and
-checking if our matrix sizes were even first. 
+version. To create our cache optimized matrix we divide our i,j, and k indices
+into smaller blocks. This allows for the multiplication to be better localized
+in memory. We can see the results in Figure~\ref{fig:mm}. Here we see that our
+cache efficient matrix multiply actually receives better performance increase
+under initial parallelization, achieving roughly a $14.5$x speedup at 5 threads,
+while our naive implementation only achieves a $4.5$x speedup at best. This
+suggests that the blocking version of matrix multiply could potentially be more
+efficient but that we do not have sufficient workloads to benefit from this type
+of parallelization. We would expect this version to be more efficient because it
+is more cache efficient. Unfortunately, in our workload we have matrices where
+the number of rows is far larger than the number of columns, often as small as
+2, and that causes more cache misses than hits. Even worse, in our
+implementation many times we have vectors be multiplied and thus we do not gain
+any benefit at all. This type of multiplication has much larger overhead and we
+would not expect it to perform better than the naive version unless we were
+dealing with substantially larger matrices where we had issues fitting a row of
+data into memory. Interestingly in the cache efficient version we see that the
+computation diverges upon evoking hyper-threading as well as becomes less
+stable. We believe that hyper-threading suffers much harsher penalties to cache
+misses than physical cores do and that this causes the divergent behavior. We
+predict that if we were learning on larger datasets, such as ImageNet, we would
+see better performance increases from these type of optimizations. 
+
+% We see here that we
+% don't get speedup even though we are better cache aligned. The reason, again,
+% for this is because the lack of work as well as the size of the matrices. The
+% problem with this is that our matrices aren't very large. Which we have many
+% rows, we don't have very many columns. This causes no real speedup from blocking
+% the matrices up because at most we can block is 2. This ends up causing more
+% cache misses than hits. We predict that even MNIST wouldn't give us a
+% significant improvement. We do not expect this to provide significant speedups
+% until we start working on larger problems like ImageNet. Additionally we had
+% problems with the block matrices because our matrices were inconsistent sizes,
+% including sometimes vectors. Vectors happened when at the final layer. This made
+% for very inconsistent results. We got the best results when blocking by 2 and
+% checking if our matrix sizes were even first. 
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{mm.png}
+\caption{Comparison of different Matrix Multiply methods}
+    \label{fig:mm}
+\end{figure}
 
 \subsection{CUDA}\label{sec:r-cuda}
 We were unfortunately unable to get the entire model into CUDA but we still
 wanted to provide some motivation as to how GPU acceleration would help with our
 problem. Knowing that PyTorch and TensorFlow benefit a lot from GPU acceleration
 we investigated how performing our matrix multiplication and transpose functions
-would help. For similar reasons as in the OMP example we didn't implement a
+would help. For similar reasons as in the OpenMP example we didn't implement a
 block matrix setup in CUDA, and actually struggled with trying to implement
 this. The same is true for the efficient matrix transpose. Instead we just kept
 the naive algorithms. To make a fair comparison we timed our results in two
@@ -141,7 +180,7 @@ different ways. The first we did was timing the matrix multiple with the
 communication time and we also timed just the kernel execution. We figured that
 testing the kernel function would give us a good indication of how fast a fully
 GPU implementation would run compared to the CPU version. Unfortunately we found
-that we were still slower in the GPU implementation. While our OMP solution ran
+that we were still slower in the GPU implementation. While our OpenMP solution ran
 in $1.213\mu s$ our CUDA kernel function ran in about $4.98\mu s$ and including
 communication time $121.734\mu s$.
 
@@ -155,3 +194,4 @@ similar relationships with around 1000 neurons per layer, testing with a small
 number of epochs, but did not record the times because we could not do a full
 run in a reasonable amount of time. Linear layers of this size are also atypical
 in modern networks so we decided it was not a good avenue to pursue. 
+

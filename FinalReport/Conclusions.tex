@@ -1,0 +1,21 @@
+\section{Conclusions}\label{sec:conclusions}
+Through this work we were able to achieve a speedup of $4.5$x over our serial
+implementation. Through this work we found many challenges within parallelizing
+seemingly simple mathematical functions. Learning about how certain algorithms
+perform better in different computational regimes as well as how the physical
+architecture affects different algorithms. We also learned a lot about how
+design patterns change as problems scale and the challenges in designing CUDA
+parallelization techniques and how writing good CUDA design patterns differs
+from that of conventional software engineering. Through this exercise we learned
+a lot about a few of the underlying challenges in accelerating Artificial Neural
+Networks and gained a greater appreciation for the work that goes into writing
+frameworks such as PyTorch and TensorFlow, and have a better appreciation for
+the utility that they provide to our community.
+
+%\subsection{Luis' conclusions}
+%
+%Working on this project really helped me understand the strengths and weaknesses of parallel programming. Before this, I had only ever used GPU-acceleration via the highly-optimized, ready-to-use options that DNN libraries like PyTorch offer. However, these libraries abstract all of the inner-workings away from the user. Thus, while I could observe, and benefit from, the increased performance, I did not understand how or why it worked. 
+%
+%The work I did both on this project and the course assignments allowed me to realize some of the nuances that go into creating parallel code. For example, I now understand that there are many different ways in which a given problem, even a simple one like matrix multiplication, can be mapped to the GPU and that different mappings can lead to significantly different performances.
+%
+%If there's something I take away from this project it is that creating code that works in parallel can actually hurt performance if there isn't enough work to be done. Parallelizing introduces overhead in several forms, such as the need for thread synchronization or the movement of data between CPU and GPU, which needs to be counter-balanced by the ability to do more computations concurrently. Nonetheless, when used correctly, the benefits of parallel code are evident and I'm glad to know more about this topic and actually have some hands-on experience with it.

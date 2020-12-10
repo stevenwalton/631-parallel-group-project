@@ -28,7 +28,8 @@
 \begin{document}
 
 %%%%%%%%% TITLE
-\title{Parallelizing Deep Neural Networks}
+\title{Parallelizing Neural Networks with OpenMP and CUDA\\
+\small{A Comparison Of Implementations and Optimizations}}
 
 \author{Luis Guzman \\
 University of Oregon\\
@@ -50,14 +51,25 @@ University of Oregon\\
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
+With the major advances and gain in popularity of machine learning it has become
+increasingly important to optimize and parallelize these types of code. Much of
+the mathematics behind machine learning is based on tensor operations,
+specifically tensor multiplication. This creates a ripe environment for the
+study of parallelization techniques. Within this project we study the effects of
+OpenMP and CUDA acceleration within an Artificial Neural Network. We draw on
+design inspiration from popular machine learning frameworks such as PyTorch
+and TensorFlow to better understand how they work under the abstraction layers
+that they provide. Through our implementations we found an overall speed-up of
+$4.5$x through the use of OpenMP but were unable to find speedup due to CUDA
+implementation. Within this paper we discuss our successes and failures in
+the implementations of accelerating technologies.
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
-%\input{Introduction}
-
+\input{Introduction}
 \input{Methodology}
-\input{Analysis}
-\input{Conclusion}
+\input{Results}
+\input{Conclusions}
 
 {\small
 \bibliographystyle{ieee_fullname}
