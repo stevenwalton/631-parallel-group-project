@@ -1,38 +1,40 @@
 \section{Methodology}\label{sec:method}
 
 For this project we set out to design a robust framework to build neural
-networks, drawing inspiration form industry and academic standards like PyTorch
-and TensorFlow. With this idea in place we set out to make a framework that
-allowed for 1) arbitrary network sizes 2) easy integration of different network
-features, such as different forms of gradient descent or regularizers, and 3)
-modularity that would allow for further expandability. We found these features
-to be important for several reasons, besides trying to mimic something that
-would be useful and not a one-trick pony. By having arbitrary network sizes this
-would allow us to test on a wide variety of datasets. Furthermore we had
-suspicions when starting the project that a network that could be trained well
-on simple datasets may also not be large enough to benefit much from
-parallelization. By allowing for arbitrary network sizes this would allow us to
-better test as the project progressed. Easy integration of new features and
-extendability this allowed us to quickly test more ideas and expand the project,
-as we did not know how much we would be able to implement. With this unknown
-factor and a short deadline being able to quickly add new features without major
-code rewrites is a valuable tool. 
+networks, drawing inspiration form industry and academic standards like
+PyTorch~\cite{NEURIPS2019_9015} and TensorFlow~\cite{tensorflow2015}. With this
+idea in place we set out to make a framework that allowed for 1) arbitrary
+network sizes 2) easy integration of different network features, such as
+different forms of gradient descent or regularizers, and 3) modularity that
+would allow for further expandability. We found these features to be important
+for several reasons, besides trying to mimic something that would be useful and
+not a one-trick pony. By having arbitrary network sizes this would allow us to
+test on a wide variety of datasets. Furthermore we had suspicions when starting
+the project that a network that could be trained well on simple datasets may
+also not be large enough to benefit much from parallelization. By allowing for
+arbitrary network sizes this would allow us to better test as the project
+progressed. Easy integration of new features and extendability this allowed us
+to quickly test more ideas and expand the project, as we did not know how much
+we would be able to implement. With this unknown factor and a short deadline
+being able to quickly add new features without major code rewrites is a
+valuable tool. 
 
 To create these features we broke out the network into multiple classes, again
-drawing on inspiration from PyTorch and HPC tools like VTK-m. We separated out
-all our math functions into one class, individual linear layers into another
-class, and finally the model into a super class. With this construction we could
-implement networks of arbitrary sizes, extend them, modify our algorithms, and
-so on with little conflict. In Figure~\ref{fig:model} we show the code required
-to generate a simple model that will accurately classify the Moons Dataset. As
-can be seen, this allows for a very similar construction style to that of
-PyTorch, where one simply needs to define the Linear Layers with the input and
-output size and how they are connected. Similarly our Sequential class
-determines how to connect all the nodes together and creates all the connections
-that will be needed for the Forward and Backwards functions. In our example the
-construction under the ``creating layers'' section is similar to PyTorch's model
-constructor and our ``Adding layers to the model'' section is similar to
-PyTorch's ``forward'' function.
+drawing on inspiration from PyTorch and HPC tools like VTK-m~\cite{7466740}. We
+separated out all our math functions into one class, individual linear layers
+into another class, and finally the model into a super class. With this
+construction we could implement networks of arbitrary sizes, extend them,
+modify our algorithms, and so on with little conflict. In
+Figure~\ref{fig:model} we show the code required to generate a simple model
+that will accurately classify the Moons Dataset. As can be seen, this allows
+for a very similar construction style to that of PyTorch, where one simply
+needs to define the Linear Layers with the input and output size and how they
+are connected. Similarly our Sequential class determines how to connect all the
+nodes together and creates all the connections that will be needed for the
+Forward and Backwards functions. In our example the construction under the
+``creating layers'' section is similar to PyTorch's model constructor and our
+``Adding layers to the model'' section is similar to PyTorch's ``forward''
+function.
 
 \begin{figure}[ht]
 \begin{lstlisting}[language=C++,

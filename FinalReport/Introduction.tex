@@ -1,23 +1,24 @@
-\section{Introduction} 
-%
+\section{Introduction} % 
+
 In the past decade, Artificial Neural Networks (ANNs) have become increasingly
 popular, with advances in the area affecting almost every sector of computing.
 Deep Neural Networks (DNNs) \--- deeper, more complex models than their
 `shallow' counterparts \--- have progressed from being academic curiosities to
-being the cornerstone of many modern technologies~\cite{deep_learning_overview}.  Given this newfound
-relevance, many researchers have devoted a lot of time optimizing these
-algorithms, constantly trying to improve them for different accelerator
-technologies and platforms. Even long before accelerators, many efforts in
-trying to parallelize neural networks were made~\cite{10.1007/BFb0024235}.
-While the new resurgence of machine learning (ML) partially came from the
-generalized availability of hardware accelerators like GPUs, there are still
-many innovations being made for CPUs. An example of this is Facebook's new
-Speech-to-Text (stt) system that runs on CPUs~\cite{fbcpu} and is aimed at home
-assistants that cannot rely on large and power-hungry accelerators.  As ML
-algorithms are getting larger, there are also continued efforts to apply machine
-learning techniques to simpler hardware. Thus, for the foreseeable future,
-optimizing ML algorithms on various platforms will remain an active area of
-research.
+being the cornerstone of many modern technologies~\cite{deep_learning_overview},
+with work showing that deeper networks tend to give better results than wide
+networks~\cite{VGG}. Given this newfound relevance, many researchers have
+devoted a lot of time optimizing these algorithms, constantly trying to improve
+them for different accelerator technologies and platforms. Even long before
+accelerators, many efforts in trying to parallelize neural networks were
+made~\cite{10.1007/BFb0024235}.  While the new resurgence of machine learning
+(ML) partially came from the generalized availability of hardware accelerators
+like GPUs, there are still many innovations being made for CPUs. An example of
+this is Facebook's new Speech-to-Text (stt) system that runs on
+CPUs~\cite{fbcpu} and is aimed at home assistants that cannot rely on large and
+power-hungry accelerators.  As ML algorithms are getting larger, there are also
+continued efforts to apply machine learning techniques to simpler hardware.
+Thus, for the foreseeable future, optimizing ML algorithms on various platforms
+will remain an active area of research.
 
 In this section we will discuss the various algorithms used in machine learning.
 In Section~\ref{sec:ann} we will discuss Artificial Neural Networks and the
@@ -184,11 +185,13 @@ Figure~\ref{fig:bgd}.
 There are, of course, limitations to what a single perceptron can accomplish no
 matter the activation function used. Figure~\ref{fig:unsolvable} presents one of
 such cases in which a classification problem cannot be solved by a single
-perceptron. The dataset shown in the figure contains points in two dimensions
-labeled as two distinct classes identified by the colors blue and orange. As can
-be observed, the blue class is ``contained'' within the orange class and, as
-such, it is impossible for a single perceptron to define a decision boundary,
-even a non-linear one, that will correctly classify all of the points. 
+perceptron, which is because multilayer perceptron networks are universial
+approximators~\cite{HORNIK1989359}. The dataset shown
+in the figure contains points in two dimensions labeled as two distinct classes
+identified by the colors blue and orange. As can be observed, the blue class is
+``contained'' within the orange class and, as such, it is impossible for a
+single perceptron to define a decision boundary, even a non-linear one, that
+will correctly classify all of the points. 
 
 \begin{figure}[!htbp]
     \centering
@@ -214,15 +217,15 @@ In problems such as the this one using an ANN, also known as Multi-Layer
 Perceptrons (MLPs), becomes necessary. A MLP consists in several perceptrons
 connected together to form a ``network''. In the literature, there exist
 multiple ways in which the perceptrons can be arranged to form different
-architectures~\cite{deep_learning_overview}. However, in this work we focus on the architecture known as
-``Feed-Forward Neural Network'' (FFNN)~\cite{ffnn}, shown in Figure~\ref{fig:ffnn}. In
-FFNNs, all neurons in one layer are connected to all of the neurons in the
-following layer, hence the name Feed-Forward.
+architectures~\cite{deep_learning_overview}. However, in this work we focus on
+the architecture known as ``Feed-Forward Neural Network'' (FFNN)~\cite{ffnn},
+shown in Figure~\ref{fig:ffnn}. In FFNNs, all neurons in one layer are connected
+to all of the neurons in the following layer, hence the name Feed-Forward.
 
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=.5\textwidth]{Images/mlp.png}
-    \caption{Structure of a FFNN.}
+    \caption{Structure of a Feed-Forward Neural Network.}
     \label{fig:ffnn}
 \end{figure}
 
@@ -240,9 +243,10 @@ The number of neurons in the output layer and their activation types depend on
 the type of problem being solved. For a regression problem, the network only has
 one output neuron, usually with an identity linear activation. In binary
 classification problems, one output neuron is sufficient. A sigmoid activation
-is also usually used in these cases, with labels 0 and 1 used to represent the
-two classes. For multi-class classification, the number of neurons in the output
-layer matches the number of classes being identified and a \textit{Softmax}~\cite{pattern_recognition}
+is also usually used in these cases~\cite{Cybenko1989ApproximationBS}, with
+labels 0 and 1 used to represent the two classes. For multi-class
+classification, the number of neurons in the output layer matches the number of
+classes being identified and a \textit{Softmax}~\cite{pattern_recognition}
 (Equation \ref{eq:softmax}) operation is applied to the results of the output
 layer neurons' to create a probability distribution vector. The class prediction
 is then obtained by obtaining the argmax of such probability vector.

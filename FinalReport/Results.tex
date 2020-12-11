@@ -209,10 +209,19 @@ We were unfortunately unable to get the entire model into CUDA but we still
 wanted to provide some motivation as to how GPU acceleration would help with our
 problem. Knowing that PyTorch and TensorFlow benefit a lot from GPU acceleration
 we investigated how performing our matrix multiplication and transpose functions
-would help. For similar reasons as in the OpenMP example we didn't implement a
+would help. We were able to successfully able to implement the naive matrix
+multiply and transpose kernels, as well as integrate all the communication
+task necessary to perform these functions. For similar reasons as in the OpenMP
+example we didn't successfully implement a
 block matrix setup in CUDA, and actually struggled with trying to implement
-this. The same is true for the efficient matrix transpose. Instead we just kept
-the naive algorithms. To make a fair comparison we timed our results in two
+this. The same is true for the efficient matrix transpose. The reason for this
+again being the shape of our matrices. We had more difficulties with the CUDA
+implementation when trying to account for the varying size. We also did not
+expect an improvement, for similar reasons to why we did not see improvement in
+the OpenMP version, and focused our efforts into trying to get important
+functions implemented and best connecting them to reduce communication times.
+Because of this we focused on the naive algorithms and trying to test them. To
+make a fair comparison we timed our results in two
 different ways. The first we did was timing the matrix multiple with the
 communication time and we also timed just the kernel execution. We figured that
 testing the kernel function would give us a good indication of how fast a fully
