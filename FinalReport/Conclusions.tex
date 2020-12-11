@@ -6,11 +6,20 @@ perform better in different computational regimes as well as how the physical
 architecture affects different algorithms. We also learned a lot about how
 design patterns change as problems scale and the challenges in designing CUDA
 parallelization techniques and how writing good CUDA design patterns differs
-from that of conventional software engineering. Through this exercise we learned
+from that of conventional software engineering. With our analysis in our OpenMP
+study we saw how important proper algorithms are for exploiting parallelism.
+This is why we first focused on on our serial optimization before we moved to
+parallelism. Unfortunately we were not able to perform this same kind of
+parallelism in CUDA and due partially to our problem as well as our lack of
+experience in CUDA programming.
+Through this exercise we learned
 a lot about a few of the underlying challenges in accelerating Artificial Neural
 Networks and gained a greater appreciation for the work that goes into writing
 frameworks such as PyTorch and TensorFlow, and have a better appreciation for
 the utility that they provide to our community.
+If we were to do this kind of exercise again we would design things differently,
+keeping in mind our lessons learned from CUDA before beginning the designing
+process. 
 
 %\subsection{Luis' conclusions}
 %

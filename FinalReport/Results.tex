@@ -5,7 +5,7 @@ we discuss the optimization techniques we performed, in the second
 section (Sec~\ref{sec:r-omp}) we discuss our OpenMP implementation, and finally
 in the third section (Sec~\ref{sec:r-cuda}) we discuss our CUDA implementation. 
 
-\subsection{Serial Optimizaton}\label{sec:r-opt}
+\subsection{Serial Optimization}\label{sec:r-opt}
 In common fashion, before we start implementing parallelization we first started
 optimizing the serial implementation of our code. We do this first because many
 optimization techniques are about memory access and reducing the number of times
@@ -91,6 +91,8 @@ experiments with 300 neurons in each hidden layer and 5 hidden layers. We found
 this to be a good balance between the program not taking too long to run and
 having enough work to see speedups from parallelism. 
 
+\subsubsection{Ablation Study}
+
 To see the effect of parallelism we perform a small ablation study to see what
 was needed for speedup and what wasn't. We show the results of this in
 Figure~\ref{fig:omp}. As we can see here, the matrix multiply parallelization
@@ -121,6 +123,8 @@ stable computation one should disable hyper-threading.
     using OpenMP}
     \label{fig:omp}
 \end{figure}
+
+\subsubsection{Matrix Multiplication}
 
 Additionally we look at our matrix multiplication vs using a cache optimized
 version. To create our cache optimized matrix we divide our i,j, and k indices
@@ -167,6 +171,39 @@ see better performance increases from these type of optimizations.
     \label{fig:mm}
 \end{figure}
 
+\subsubsection{Batching}
+
+The largest improvement we made to our network was incorporating batching. Not
+only does batching allow for smother convergence but it also allows for more
+efficient parallelism. Batching has been shown to greatly speed up machine
+learning algorithms and we observe similar characteristics in our code. By
+implementing batching we observe a smooth decrease in time. Using power of 2
+batch sizing we observe log scale decreasing in compute time, shown in
+Figure~\ref{batch}. We can see that through batching we can get a 142x speedup.
+This is with the fully optimized OpenMP version of the code. 
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{batch.png}
+\caption{Time vs Batch Size using $2^n$ batch size on log-log scale}
+    \label{fig:batch}
+\end{figure}
+
+One reason we added batching is because it also allows us to better exploit
+parallelism and increase our computation size. While this does not increase the
+problem size it does increase the amount of work done by each individual
+mathematical operation. This is why we see such a large time difference between
+a batch size of 1 vs a batch size of 512, which takes almost no time at all. We
+stop at a maximum of 512 because the moon dataset has 1000 data points and when
+using the typical 80\% training size that's only two batches. We tested a 1024
+batch size and the entire computation took sub 1 second. This shows how proper
+algorithm design is needed for good parallelization. We also show a partial test
+when running 1 CPU and similarly looking at batching. We were not able to run a
+full suite because another student needed the machine for research work. Still,
+we can see in the 512 batch case that there is a difference of $8.25$x by using
+16 CPUs vs 1. This illustrates the power of batching and why it is a necessary
+algorithm for both speedup and parallelization.
+
 \subsection{CUDA}\label{sec:r-cuda}
 We were unfortunately unable to get the entire model into CUDA but we still
 wanted to provide some motivation as to how GPU acceleration would help with our
@@ -194,4 +231,3 @@ similar relationships with around 1000 neurons per layer, testing with a small
 number of epochs, but did not record the times because we could not do a full
 run in a reasonable amount of time. Linear layers of this size are also atypical
 in modern networks so we decided it was not a good avenue to pursue. 
-

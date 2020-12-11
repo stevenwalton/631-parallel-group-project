@@ -95,7 +95,7 @@
 % 
 \NeedsTeXFormat{LaTeX2e}[1999/12/01]
 \ProvidesPackage{cvpr} [2020/5/16 Example LaTex class for IEEE CVPR]
-\LoadClass[10pt,twocolumn,letterpaper]{article}
+\LoadClass[11pt,twocolumn,letterpaper]{article}
 
 \RequirePackage{xspace}
 \RequirePackage{silence}
